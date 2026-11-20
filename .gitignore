@@ -1,0 +1,23 @@
+# Environment & Secrets (NEVER commit these to GitHub)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.pytest_cache/
+
+# Local SQLite database (uncomment below once you switch to Supabase Postgres)
+# backend/portfolio.db
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

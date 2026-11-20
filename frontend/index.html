@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marcus Kaula — AI Automation, Data Science & Full-Stack Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ink: '#212121',
+            obsidian: '#000000',
+            stone: '#F7F7F5',
+            hairline: '#D4D4D4',
+            muted: '#767676',
+            emerald: {
+              DEFAULT: '#127749',
+              dark: '#0D5A36',
+              tint: '#EBF5F0',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --bg-base: #ffffff;
+      --bg-obsidian: #000000;
+      --bg-stone: #f7f7f5;
+      --text-primary: #212121;
+      --text-muted: #767676;
+      --accent-emerald: #127749;
+      --border-hairline: #d4d4d4;
+      --ease-swiss: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: var(--text-primary);
+      background-color: var(--bg-base);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    .swiss-transition {
+      transition: all 300ms var(--ease-swiss);
+    }
+    .focus-ring:focus-visible {
+      outline: 2px solid var(--accent-emerald);
+      outline-offset: 2px;
+    }
+    .editorial-grid-line {
+      border-color: var(--border-hairline);
+    }
+    @media print {
+      header, footer, #admin-view, .no-print { display: none !important; }
+      #cv-section { padding: 0 !important; border: none !important; }
+      body { background: #ffffff !important; color: #000000 !important; }
+    }
+  </style>
+</head>
+<body class="bg-white text-ink selection:bg-emerald selection:text-white">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 bg-obsidian text-white px-5 py-3.5 text-sm font-medium border border-white/15 shadow-2xl swiss-transition" role="status" aria-live="polite">
+    <span class="w-2 h-2 rounded-full bg-emerald inline-block"></span>
+    <span id="toast-msg">Saved</span>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-hairline">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="#top" id="nav-brand" class="flex items-center gap-3 focus-ring group">
+        <span id="secret-brand-dot" class="w-2.5 h-2.5 bg-emerald inline-block swiss-transition group-hover:scale-125" title="Marcus Kaula"></span>
+        <span class="font-semibold tracking-tight text-sm uppercase letter-spacing-wide" id="header-name">Marcus Kaula</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-muted" aria-label="Primary">
+        <a href="#works" class="hover:text-ink swiss-transition focus-ring py-1">Works</a>
+        <a href="#journey" class="hover:text-ink swiss-transition focus-ring py-1">Journey</a>
+        <a href="#certificates" class="hover:text-ink swiss-transition focus-ring py-1">Certificates</a>
+        <a href="#cv" class="hover:text-ink swiss-transition focus-ring py-1">CV</a>
+        <a href="#blog" class="hover:text-ink swiss-transition focus-ring py-1">Journal</a>
+        <a href="#gallery" class="hover:text-ink swiss-transition focus-ring py-1">Gallery</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+
+        <button id="mobile-menu-btn" type="button" class="md:hidden p-2 border border-hairline text-ink focus-ring" aria-label="Toggle Menu" aria-expanded="false">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-hairline bg-white px-5 py-4 space-y-3 text-sm font-medium">
+      <a href="#works" class="block py-1.5 text-ink hover:text-emerald">Works</a>
+      <a href="#journey" class="block py-1.5 text-ink hover:text-emerald">Journey</a>
+      <a href="#certificates" class="block py-1.5 text-ink hover:text-emerald">Certificates</a>
+      <a href="#cv" class="block py-1.5 text-ink hover:text-emerald">CV</a>
+      <a href="#blog" class="block py-1.5 text-ink hover:text-emerald">Journal</a>
+      <a href="#gallery" class="block py-1.5 text-ink hover:text-emerald">Gallery</a>
+    </div>
+  </header>
+
+  <!-- ==================== PUBLIC PORTFOLIO VIEW ==================== -->
+  <main id="public-view">
+    <!-- Hero Section -->
+    <section id="top" class="border-b border-hairline">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 py-14 sm:py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <div class="lg:col-span-7 space-y-7">
+          <div class="flex flex-wrap items-center gap-3 text-xs font-mono uppercase tracking-widest text-muted">
+            <span class="inline-flex items-center gap-2 text-emerald font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+              <span id="hero-status">Available for Engineering &amp; AI Systems</span>
+            </span>
+            <span>·</span>
+            <span id="hero-location">Nairobi, Kenya</span>
+          </div>
+
+          <h1 id="hero-headline" class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.06] text-ink">
+            Engineering agentic AI, data systems, and resilient software.
+          </h1>
+
+          <p id="hero-subheadline" class="text-base sm:text-lg text-muted leading-relaxed max-w-2xl">
+            I'm Marcus Kaula — Founder &amp; AI Automation Engineer at KezaFlow Enterprises and Full-Stack AI Developer at CareConnect. I build retrieval-augmented pipelines, predictive epidemiological models, and production mobile platforms.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <a href="#works" class="px-6 py-3.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition focus-ring">
+              Explore Selected Works
+            </a>
+            <a href="#cv" class="px-6 py-3.5 border border-hairline text-ink text-sm font-medium hover:border-ink swiss-transition focus-ring">
+              View Curriculum Vitae
+            </a>
+            <a id="hero-linkedin-link" href="https://www.linkedin.com/in/marcus-kaula-268b1340b" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-3.5 text-sm font-mono text-muted hover:text-ink swiss-transition focus-ring">
+              <span>LinkedIn</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
+            <a id="hero-github-link" href="https://github.com/kaula12" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-3.5 text-sm font-mono text-muted hover:text-ink swiss-transition focus-ring">
+              <span>github.com/kaula12</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="border border-hairline bg-stone p-2">
+            <div class="aspect-[4/3] overflow-hidden bg-obsidian relative">
+              <img id="hero-image" src="/uploads/hero-studio.jpg" alt="Marcus Kaula Studio Workspace" class="w-full h-full object-cover" />
+              <div class="absolute bottom-3 left-3 bg-obsidian/85 text-white px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase border border-white/15">
+                Nairobi · EAT (UTC+3)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Precision Metrics Strip -->
+      <div class="border-t border-hairline bg-stone">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-2 md:grid-cols-4 divide-x divide-hairline">
+          <div class="py-5 pr-4">
+            <div class="text-xs font-mono uppercase tracking-wider text-muted">Public Repos</div>
+            <div class="text-2xl font-semibold tabular-nums mt-1" id="stat-repos">40+</div>
+          </div>
+          <div class="py-5 px-4 sm:px-6">
+            <div class="text-xs font-mono uppercase tracking-wider text-muted">Featured Systems</div>
+            <div class="text-2xl font-semibold tabular-nums mt-1" id="stat-projects">7</div>
+          </div>
+          <div class="py-5 px-4 sm:px-6">
+            <div class="text-xs font-mono uppercase tracking-wider text-muted">Focus</div>
+            <div class="text-sm sm:text-base font-medium mt-2">AI Agents · Data · Full-Stack</div>
+          </div>
+          <div class="py-5 pl-4 sm:pl-6">
+            <div class="text-xs font-mono uppercase tracking-wider text-muted">Languages</div>
+            <div class="text-sm sm:text-base font-medium mt-2" id="stat-languages">English · Swahili</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Selected Works & Video Showcase -->
+    <section id="works" class="py-20 border-b border-hairline">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <div class="text-xs font-mono uppercase tracking-widest text-emerald mb-2">01 / Selected Works</div>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink">Projects &amp; Video Demos</h2>
+          </div>
+          <div id="project-filters" class="flex flex-wrap gap-2" role="tablist" aria-label="Filter projects by category"></div>
+        </div>
+
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- About & Journey Timeline (Obsidian Section) -->
+    <section id="journey" class="py-20 bg-obsidian text-white border-b border-white/15">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-5 space-y-6">
+          <div class="text-xs font-mono uppercase tracking-widest text-emerald">02 / About &amp; Journey</div>
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight leading-tight">From foundational analytics to autonomous production systems.</h2>
+          <p id="about-bio" class="text-white/75 leading-relaxed text-base">
+            Based in Nairobi, my work bridges rigorous statistical modeling with production software engineering. After completing specialized Data Science and AI training at Moringa School and building a quantitative foundation across Pearson Edexcel and ACCA accounting principles, I founded KezaFlow Enterprises to architect enterprise RAG and n8n automation pipelines while engineering CareConnect's multi-sided healthcare platform.
+          </p>
+          <div class="pt-4 border-t border-white/15 grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div class="text-xs font-mono uppercase text-white/50">Primary Stack</div>
+              <div class="mt-1 text-white/90" id="about-stack">Python, FastAPI, Flutter, LangChain, PostgreSQL</div>
+            </div>
+            <div>
+              <div class="text-xs font-mono uppercase text-white/50">Base</div>
+              <div class="mt-1 text-white/90">Nairobi, Kenya</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div id="journey-list" class="divide-y divide-white/15 border-y border-white/15"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certificates & Credentials -->
+    <section id="certificates" class="py-20 border-b border-hairline bg-stone">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+          <div>
+            <div class="text-xs font-mono uppercase tracking-widest text-emerald mb-2">03 / Verified Credentials</div>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink">Certificates &amp; Training</h2>
+          </div>
+          <p class="text-sm text-muted max-w-md">Technical certifications, specialized bootcamps, and professional qualifications.</p>
+        </div>
+        <div id="certificates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- CV / Resume Section -->
+    <section id="cv" class="py-20 border-b border-hairline">
+      <div id="cv-section" class="max-w-5xl mx-auto px-5 sm:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-ink">
+          <div>
+            <div class="text-xs font-mono uppercase tracking-widest text-emerald mb-2">04 / Curriculum Vitae</div>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink" id="cv-name">Marcus Kaula</h2>
+            <p class="text-sm text-muted mt-1" id="cv-title-line">Founder &amp; AI Automation Engineer · Data Scientist · Full-Stack Developer</p>
+          </div>
+          <div class="flex flex-wrap gap-3 no-print">
+            <button id="print-cv-btn" type="button" class="px-4 py-2.5 bg-obsidian text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald swiss-transition focus-ring">
+              Print / Save PDF
+            </button>
+            <a id="download-uploaded-cv-btn" href="#" download class="hidden px-4 py-2.5 border border-ink text-ink text-xs font-mono uppercase tracking-wider hover:bg-stone swiss-transition focus-ring">
+              Download Uploaded CV
+            </a>
+          </div>
+        </div>
+
+        <div id="cv-content" class="pt-10 space-y-10"></div>
+      </div>
+    </section>
+
+    <!-- Blog / Journal Section -->
+    <section id="blog" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <div class="text-xs font-mono uppercase tracking-widest text-emerald mb-2">05 / Engineering Journal</div>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink">Notes &amp; Technical Writing</h2>
+          </div>
+          <div id="blog-filters" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div id="blog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- Personal Visual Gallery / Moments Section -->
+    <section id="gallery" class="py-20 border-t border-hairline bg-stone">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <div class="text-xs font-mono uppercase tracking-widest text-emerald mb-2">06 / Visual Journal</div>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink">Personal Gallery &amp; Moments</h2>
+          </div>
+          <div id="gallery-filters" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== ADMIN STUDIO VIEW ==================== -->
+  <section id="admin-view" class="hidden min-h-screen bg-stone py-10">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8">
+      <!-- Admin Header -->
+      <div class="bg-obsidian text-white p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-obsidian">
+        <div>
+          <div class="text-xs font-mono uppercase tracking-widest text-emerald">Dynamic CMS · Local &amp; Backend Sync</div>
+          <h1 class="text-2xl sm:text-3xl font-semibold mt-1">Portfolio Admin Studio</h1>
+          <p class="text-sm text-white/70 mt-1">Update projects, upload demo videos &amp; placeholder images, edit your CV, manage certificates, and publish blog posts.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="export-json-btn" type="button" class="px-4 py-2 text-xs font-mono uppercase border border-white/25 hover:border-white swiss-transition">Export JSON</button>
+          <label class="px-4 py-2 text-xs font-mono uppercase border border-white/25 hover:border-white swiss-transition cursor-pointer">
+            Import JSON
+            <input id="import-json-input" type="file" accept="application/json" class="hidden" />
+          </label>
+          <button id="reset-demo-btn" type="button" class="px-4 py-2 text-xs font-mono uppercase border border-red-400/50 text-red-300 hover:bg-red-950 swiss-transition">Reset Defaults</button>
+          <button id="exit-admin-btn" type="button" class="px-4 py-2 text-xs font-mono uppercase bg-emerald text-white hover:bg-emerald-dark swiss-transition">Back to Site</button>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="bg-white border-x border-b border-hairline px-4 sm:px-6 flex flex-wrap gap-1 overflow-x-auto" id="admin-tabs" role="tablist"></div>
+
+      <!-- Admin Panel Content -->
+      <div id="admin-panel" class="bg-white border-x border-b border-hairline p-6 sm:p-8"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-hairline bg-obsidian text-white py-12">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <div class="font-semibold text-sm uppercase tracking-wider" id="footer-name">Marcus Kaula</div>
+        <div class="text-xs text-white/60 mt-1" id="footer-tagline">Nairobi, Kenya · +254 720 827 377 · kaulamarcus1@gmail.com</div>
+      </div>
+      <div class="flex flex-wrap items-center gap-6 text-xs font-mono text-white/70">
+        <a id="footer-linkedin" href="https://www.linkedin.com/in/marcus-kaula-268b1340b" target="_blank" rel="noopener noreferrer" class="hover:text-white swiss-transition">LinkedIn</a>
+        <a id="footer-github" href="https://github.com/kaula12" target="_blank" rel="noopener noreferrer" class="hover:text-white swiss-transition">GitHub (kaula12)</a>
+        <a id="footer-email" href="mailto:kaulamarcus1@gmail.com" class="hover:text-white swiss-transition">Email</a>
+        <span class="text-white/40">© <span id="footer-year">2026</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+  <!-- Project Detail & Video Modal -->
+  <div id="project-modal" class="fixed inset-0 z-50 hidden bg-obsidian/80 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+    <div class="bg-white border border-hairline max-w-4xl w-full my-8 overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-hairline bg-stone">
+        <span id="pm-category" class="text-xs font-mono uppercase tracking-widest text-emerald">Category</span>
+        <button id="pm-close" type="button" class="p-1.5 text-muted hover:text-ink focus-ring" aria-label="Close project modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-6 sm:p-8 space-y-6 max-h-[82vh] overflow-y-auto">
+        <div>
+          <h3 id="pm-title" class="text-2xl sm:text-3xl font-semibold text-ink"></h3>
+          <p id="pm-summary" class="text-muted mt-2 leading-relaxed"></p>
+        </div>
+
+        <!-- Video or Image Media Stage -->
+        <div id="pm-media-stage" class="border border-hairline bg-obsidian overflow-hidden"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+          <div class="md:col-span-2 space-y-3">
+            <h4 class="text-xs font-mono uppercase tracking-wider text-muted">Architecture &amp; Outcomes</h4>
+            <p id="pm-description" class="text-sm text-ink leading-relaxed whitespace-pre-line"></p>
+          </div>
+          <div class="space-y-4 border-t md:border-t-0 md:border-l border-hairline pt-4 md:pt-0 md:pl-6">
+            <div>
+              <div class="text-xs font-mono uppercase tracking-wider text-muted mb-2">Tech Stack</div>
+              <div id="pm-stack" class="flex flex-wrap gap-1.5"></div>
+            </div>
+            <div id="pm-links" class="space-y-2 pt-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blog Reader Modal -->
+  <div id="blog-modal" class="fixed inset-0 z-50 hidden bg-obsidian/80 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="bm-title">
+    <div class="bg-white border border-hairline max-w-3xl w-full my-8 overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-hairline bg-stone">
+        <div class="flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-muted">
+          <span id="bm-tag" class="text-emerald">Tag</span>
+          <span>·</span>
+          <span id="bm-date">Date</span>
+          <span>·</span>
+          <span id="bm-readtime">5 min read</span>
+        </div>
+        <button id="bm-close" type="button" class="p-1.5 text-muted hover:text-ink focus-ring" aria-label="Close article">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-6 sm:p-10 space-y-6 max-h-[82vh] overflow-y-auto">
+        <h3 id="bm-title" class="text-2xl sm:text-3xl font-semibold text-ink leading-tight"></h3>
+        <div id="bm-cover-wrap" class="hidden aspect-[16/9] border border-hairline overflow-hidden bg-stone">
+          <img id="bm-cover" src="" alt="" class="w-full h-full object-cover" />
+        </div>
+        <div id="bm-body" class="text-ink leading-relaxed space-y-4 text-base whitespace-pre-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gallery Photo Lightbox Modal -->
+  <div id="gallery-modal" class="fixed inset-0 z-50 hidden bg-obsidian/90 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="gm-title">
+    <div class="bg-white border border-hairline max-w-4xl w-full my-8 overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-hairline bg-stone">
+        <div class="flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-muted">
+          <span id="gm-tag" class="text-emerald">Tag</span>
+          <span>·</span>
+          <span id="gm-date">Date</span>
+          <span id="gm-location-sep">·</span>
+          <span id="gm-location">Location</span>
+        </div>
+        <button id="gm-close" type="button" class="p-1.5 text-muted hover:text-ink focus-ring" aria-label="Close photo">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="bg-obsidian flex items-center justify-center max-h-[65vh] overflow-hidden">
+        <img id="gm-image" src="" alt="" class="max-h-[65vh] w-auto object-contain" />
+      </div>
+      <div class="p-6 space-y-2">
+        <h3 id="gm-title" class="text-xl font-semibold text-ink"></h3>
+        <p id="gm-caption" class="text-sm text-muted leading-relaxed whitespace-pre-line"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Passcode Modal -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-obsidian/80 backdrop-blur-sm items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="bg-white border border-hairline max-w-md w-full p-6 sm:p-8 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 id="auth-title" class="text-xl font-semibold">Studio Access</h3>
+        <button id="auth-close" type="button" class="text-muted hover:text-ink p-1 focus-ring" aria-label="Close">✕</button>
+      </div>
+      <p class="text-sm text-muted">Enter your private passcode to unlock the portfolio CMS.</p>
+      <form id="auth-form" class="space-y-4">
+        <div>
+          <label for="auth-passcode" class="block text-xs font-mono uppercase text-muted mb-1.5">Passcode</label>
+          <input id="auth-passcode" type="password" autocomplete="current-password" placeholder="••••••••" class="w-full border border-hairline px-3.5 py-2.5 text-sm focus:border-emerald focus:outline-none" />
+          <p id="auth-error" class="hidden text-xs text-red-600 mt-1.5">Invalid passcode.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="submit" class="w-full py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Unlock Studio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ==================== DEFAULT GROUNDED STATE ====================
+    const STORAGE_KEY = 'marcus_kaula_portfolio_v2';
+    const sessionMediaUrls = {}; // Holds object URLs for large uploaded videos/images in current session
+
+    const DEFAULT_STATE = {
+      profile: {
+        name: 'Marcus Kaula',
+        role: 'Data Science | Machine Learning & AI Engineering | Data Analysis & Visualization',
+        location: 'Nairobi, Kenya',
+        phone: '+254 720 827 377',
+        status: 'Available for Data Science, AI Automation & Full-Stack Systems',
+        headline: 'Engineering agentic AI, data pipelines, and production software.',
+        subheadline: 'Data scientist and AI/automation engineer based in Nairobi, working across predictive modeling, statistical analysis, data visualization, workflow automation, and applied machine learning.',
+        aboutBio: 'Marcus Kaula is a data scientist and AI/automation engineer based in Nairobi, working across predictive modeling, statistical analysis, data visualization, workflow automation, and applied machine learning. He builds automated data pipelines, AI-powered systems, and full data products using Python, ranging from independent data science projects to production automation systems for business clients. His work spans aviation safety analytics, entertainment-industry revenue analysis, predictive modeling on live market data, AI-driven lead generation and voice agent systems, and full-stack platforms in healthcare and property management. Alongside client and independent data science work, Marcus writes and reviews evaluation tasks for AI model testing under Project Keystone, work that depends on precision, consistency, and careful reasoning.',
+        primaryStack: 'Python, pandas, Tableau, n8n, Apify, FastAPI, Flutter, Supabase, PostgreSQL',
+        languages: 'English · Swahili',
+        githubUrl: 'https://github.com/kaula12',
+        linkedinUrl: 'https://www.linkedin.com/in/marcus-kaula-268b1340b',
+        email: 'kaulamarcus1@gmail.com',
+        heroImage: '/uploads/hero-studio.jpg',
+        passcode: 'kaula12'
+      },
+      projects: [
+        {
+          id: 'proj-kezaflow',
+          title: 'AI Company Document Discovery Automation',
+          category: 'AI & Automation',
+          year: '2025 – Present',
+          summary: 'Automated web-search and data-discovery workflow that extracts company document details to Google Sheets with duplicate detection.',
+          description: 'Built at KezaFlow Enterprises: an automated web-search and data-discovery workflow that searches for company documents, extracts key details, and logs results to Google Sheets with duplicate detection, keeping the dataset current without manual research.',
+          stack: ['n8n', 'Apify', 'SearXNG', 'Google Sheets'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '/uploads/proj-kezaflow.jpg',
+          videoUrl: '',
+          featured: true
+        },
+        {
+          id: 'proj-voice-agent',
+          title: 'AI Voice Agent Platform',
+          category: 'AI & Automation',
+          year: '2025 – Present',
+          summary: 'AI voice agents handling customer inquiries, appointment scheduling, and automated lead qualification.',
+          description: 'Designed AI voice agents at KezaFlow Enterprises handling customer inquiries, appointment scheduling, and lead qualification for business clients, with qualified leads routing automatically instead of sitting in a manual follow-up queue.',
+          stack: ['OpenAI', 'n8n', 'Webhooks', 'Supabase'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: true
+        },
+        {
+          id: 'proj-careconnect',
+          title: 'CareConnect Healthcare Platform',
+          category: 'Full-Stack',
+          year: '2024 – 2025',
+          summary: 'Healthcare platform connecting patients, doctors, pharmacies, and home care providers with telemedicine, M-Pesa, and USSD.',
+          description: 'Designed a healthcare platform connecting patients with doctors, pharmacies, and home care providers, with real-time appointment booking, telemedicine calls, automated emergency routing, M-Pesa payments, and lightweight USSD access for patients without smartphones.',
+          stack: ['Flutter', 'React Native', 'FastAPI', 'PostgreSQL'],
+          githubUrl: 'https://github.com/kaula12/care-connect-us',
+          liveUrl: '',
+          image: '/uploads/proj-careconnect.jpg',
+          videoUrl: '',
+          featured: true
+        },
+        {
+          id: 'proj-ntsb',
+          title: 'Aviation Accident Risk Analysis',
+          category: 'Data Science',
+          year: '2025 – 2026',
+          summary: 'Six-decade NTSB aviation accident analysis with interactive Tableau dashboards for aircraft safety recommendations.',
+          description: 'Cleaned and analyzed six decades of NTSB aviation accident data, then built interactive Tableau dashboards to identify lower-risk aircraft makes and models and support data-backed safety recommendations.',
+          stack: ['Python', 'pandas', 'Tableau'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '/uploads/proj-kcews.jpg',
+          videoUrl: '',
+          featured: true
+        },
+        {
+          id: 'proj-client-workflow',
+          title: 'Client Workflow Automation',
+          category: 'AI & Automation',
+          year: '2025 – Present',
+          summary: 'End-to-end CRM syncing, email follow-up, lead qualification, customer onboarding, and appointment reminders.',
+          description: 'Built workflows at KezaFlow Enterprises covering email follow-up, CRM syncing, lead qualification, customer onboarding, and appointment reminders, connecting tools so data moves between systems without manual re-entry.',
+          stack: ['n8n', 'Supabase', 'Webhooks'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-camiguere',
+          title: 'Camiguere Rentals — Property Management System',
+          category: 'Full-Stack',
+          year: '2025 – Present',
+          summary: 'Rental property management platform covering tenant records, rent collection, maintenance requests, and financial reporting.',
+          description: 'Designed and built a rental property management system at KezaFlow Enterprises covering tenant records, rent collection, maintenance requests, and financial reporting.',
+          stack: ['Supabase', 'FastAPI', 'Flutter'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-bizmate',
+          title: 'BizMate Business Management System',
+          category: 'Full-Stack',
+          year: '2025 – Present',
+          summary: 'SaaS platform for SMBs covering point of sale, inventory, customer records, sales analytics, and subscription billing.',
+          description: 'Designed a SaaS platform for small and medium businesses covering point of sale, inventory, customer records, sales analytics, and subscription billing.',
+          stack: ['Flutter', 'FastAPI', 'Supabase', 'PostgreSQL'],
+          githubUrl: 'https://github.com/kaula12/bizMate',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-restoran',
+          title: 'Restaurant QR Ordering & Tablet POS System',
+          category: 'Full-Stack',
+          year: '2025 – Present',
+          summary: 'QR table-side customer ordering paired with a staff tablet POS and admin dashboard for orders, inventory, and billing.',
+          description: 'Designed a restaurant ordering system where customers order by scanning a QR code at the table, with staff managing orders, inventory, and billing through a tablet-based POS and admin dashboard.',
+          stack: ['Flutter', 'FastAPI', 'PostgreSQL'],
+          githubUrl: 'https://github.com/kaula12/restoran.io',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-xscraper',
+          title: 'Quantora Instagram Data Scraper & Brand Intelligence',
+          category: 'AI & Automation',
+          year: '2026',
+          summary: 'Production-grade Instagram scraper across three scraping modes with multi-format exports for Quantora Technologies.',
+          description: 'Built a production-grade Instagram scraper for Quantora Technologies Limited across three scraping modes with exports in multiple formats, tested against real public accounts to confirm data accuracy before client handoff, alongside AI-assisted brand and promotional content.',
+          stack: ['Apify', 'Flask', 'Python'],
+          githubUrl: 'https://github.com/kaula12/quantora',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-kcews',
+          title: 'Film Industry Revenue Analysis',
+          category: 'Data Science',
+          year: '2025 – 2026',
+          summary: 'Correlation analysis and visual study of movie industry revenue patterns, genre performance, and box office trends.',
+          description: 'Analyzed movie industry datasets to study revenue patterns, genre performance, and box office trends using correlation analysis and visualization in Python, pandas, and Tableau.',
+          stack: ['Python', 'pandas', 'Tableau'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-sales-dashboard',
+          title: 'Sales Data Analytics Dashboard',
+          category: 'Data Science',
+          year: '2025 – 2026',
+          summary: 'Interactive Tableau dashboards for sales KPI monitoring, revenue trends, and executive reporting.',
+          description: 'Built interactive Tableau dashboards for sales performance monitoring, covering KPIs, revenue trends, and executive-level reporting.',
+          stack: ['Tableau', 'Data Visualization'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-bitcoin',
+          title: 'Bitcoin Direction Prediction',
+          category: 'Data Science',
+          year: '2025 – 2026',
+          summary: 'Real-time concept for predicting Bitcoin price direction using live market data streaming pipelines.',
+          description: 'Built a real-time concept for predicting Bitcoin price direction using live market data streaming pipelines in Python.',
+          stack: ['Python', 'Streaming Data Pipelines', 'Machine Learning'],
+          githubUrl: 'https://github.com/kaula12',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        },
+        {
+          id: 'proj-syriatel',
+          title: 'SyriaTel Customer Churn Prediction',
+          category: 'Data Science',
+          year: '2025',
+          summary: 'Logistic regression classifier predicting telecom customer churn to enable targeted retention.',
+          description: 'Built an end-to-end classification pipeline in Python and Jupyter Notebook to identify high-risk telecom subscribers before churn, evaluating precision-recall trade-offs and key behavioral drivers.',
+          stack: ['Python', 'scikit-learn', 'pandas', 'Jupyter'],
+          githubUrl: 'https://github.com/kaula12/SyriaTel-Customer-Churn-Prediction',
+          liveUrl: '',
+          image: '',
+          videoUrl: '',
+          featured: false
+        }
+      ],
+      journey: [
+        {
+          id: 'j-1',
+          period: '2026',
+          role: 'AI Evaluation Task Writer (Contract)',
+          org: 'Project Keystone — Sypris Solutions',
+          description: 'Writes and reviews evaluation tasks used for AI model testing, work that depends on precision, consistency, and careful reasoning.'
+        },
+        {
+          id: 'j-2',
+          period: '2025 — Present',
+          role: 'Founder',
+          org: 'KezaFlow Enterprises · Nairobi, Kenya',
+          description: 'Runs an AI automation and data consulting business, building automation systems, data pipelines, AI voice agents, and workflow tools for business clients.'
+        },
+        {
+          id: 'j-3',
+          period: '2025 — Present',
+          role: 'Co-Founder & Co-Director',
+          org: 'Quantora Technologies Limited · Nairobi, Kenya',
+          description: 'Co-runs a digital growth company connecting clients’ social media presence to their sales pipeline through automation, data intelligence, and AI content.'
+        },
+        {
+          id: 'j-4',
+          period: '2024 — Present',
+          role: 'Data Scientist & AI Developer',
+          org: 'Independent Projects (Remote)',
+          description: 'Builds predictive models, statistical analyses, and data pipelines across independent data science projects, working end to end from data cleaning through visualization in Python and Tableau.'
+        },
+        {
+          id: 'j-5',
+          period: '2024 — 2025',
+          role: 'Full-Stack AI & Mobile App Developer',
+          org: 'CareConnect · Nairobi, Kenya',
+          description: 'Designed and built a healthcare platform connecting patients, doctors, pharmacies, and home care providers with telemedicine, M-Pesa payments, and USSD access.'
+        },
+        {
+          id: 'j-6',
+          period: '2025 — 2026',
+          role: 'Data Science & Artificial Intelligence',
+          org: 'Moringa School · Nairobi, Kenya',
+          description: 'Completed training in Machine Learning, Statistical Modeling, and Data Analysis with Python, including practical capstone projects.'
+        }
+      ],
+      certificates: [
+        {
+          id: 'cert-1',
+          title: 'Data Science & Artificial Intelligence (Completed)',
+          issuer: 'Moringa School, Nairobi, Kenya',
+          date: '2025 – 2026',
+          credentialId: 'Machine Learning, Statistical Modeling & Data Analysis',
+          verifyUrl: '',
+          image: ''
+        },
+        {
+          id: 'cert-2',
+          title: 'Data Analysis and Visualization with Python',
+          issuer: 'Moringa School, Nairobi, Kenya',
+          date: '2025',
+          credentialId: 'Python & Tableau Analytics',
+          verifyUrl: '',
+          image: ''
+        },
+        {
+          id: 'cert-3',
+          title: 'AI Model Evaluation — Project Keystone',
+          issuer: 'Sypris Solutions',
+          date: '2026',
+          credentialId: 'Contract Specialist',
+          verifyUrl: '',
+          image: ''
+        }
+      ],
+      cv: {
+        contactLine: 'Tel +254 720 827 377 | Email: kaulamarcus1@gmail.com | LinkedIn: linkedin.com/in/marcus-kaula-268b1340b | GitHub: github.com/kaula12',
+        summary: 'Marcus Kaula is a data scientist and AI/automation engineer based in Nairobi, working across predictive modeling, statistical analysis, data visualization, workflow automation, and applied machine learning. He builds automated data pipelines, AI-powered systems, and full data products using Python, ranging from independent data science projects to production automation systems for business clients. His work spans aviation safety analytics, entertainment-industry revenue analysis, predictive modeling on live market data, AI-driven lead generation and voice agent systems, and full-stack platforms in healthcare and property management. Alongside client and independent data science work, Marcus writes and reviews evaluation tasks for AI model testing under Project Keystone, work that depends on precision, consistency, and careful reasoning.',
+        competencies: [
+          'Statistical Analysis & Modeling',
+          'Machine Learning & Predictive Analytics',
+          'Data Visualization (Tableau)',
+          'Python & Data Pipelines (Pandas)',
+          'Exploratory Data Analysis',
+          'Database Management (Supabase, PostgreSQL)',
+          'AI Model Evaluation',
+          'Workflow Automation (n8n)',
+          'API Integrations',
+          'Web Scraping & Data Extraction (Apify)',
+          'Full-Stack Development (FastAPI, Flutter)',
+          'Remote Team Collaboration'
+        ],
+        experience: [
+          {
+            title: 'AI Evaluation Task Writer (Contract)',
+            company: 'Project Keystone - Sypris Solutions',
+            period: '2026',
+            bullets: 'Writes and reviews evaluation tasks used for AI model testing, work that depends on precision and consistency.'
+          },
+          {
+            title: 'Founder',
+            company: 'KezaFlow Enterprises, Nairobi, Kenya',
+            period: '2025 – Present',
+            bullets: 'Runs an AI automation and data consulting business, building automation systems, data pipelines, and workflow tools for business clients.'
+          },
+          {
+            title: 'Co-Founder & Co-Director',
+            company: 'Quantora Technologies Limited, Nairobi, Kenya',
+            period: '2025 – Present',
+            bullets: "Co-runs a digital growth company connecting clients' social media presence to their sales pipeline through automation, data intelligence, and AI content."
+          },
+          {
+            title: 'Data Scientist & AI Developer',
+            company: 'Independent Projects (Remote)',
+            period: '2024 – Present',
+            bullets: 'Builds predictive models, statistical analyses, and data pipelines across independent data science projects, working end to end from data cleaning through visualization in Python and Tableau.'
+          },
+          {
+            title: 'Full-Stack AI & Mobile App Developer',
+            company: 'CareConnect, Nairobi, Kenya',
+            period: '2024 – 2025',
+            bullets: 'Designed and built a healthcare platform connecting patients, doctors, pharmacies, and home care providers, with real-time appointment booking, telemedicine calls, automated emergency routing, M-Pesa payments, and lightweight USSD access.'
+          }
+        ],
+        education: [
+          { program: 'Data Science & Artificial Intelligence (Completed) — Machine Learning, Statistical Modeling, and Data Analysis', institution: 'Moringa School, Nairobi, Kenya', year: '2025 – 2026' },
+          { program: 'Data Analysis and Visualization with Python', institution: 'Moringa School, Nairobi, Kenya', year: '2025' }
+        ],
+        skills: [
+          { group: 'Data Science & ML', items: 'Python, pandas, Statistical Analysis & Modeling, Machine Learning & Predictive Analytics, Exploratory Data Analysis, Tableau' },
+          { group: 'AI & Automation', items: 'n8n, OpenAI, AI Voice Agents, AI Model Evaluation, Apify, SearXNG, Webhooks, API Integrations' },
+          { group: 'Full-Stack & Databases', items: 'FastAPI, Flask, Flutter, React Native, Supabase, PostgreSQL' }
+        ],
+        softSkills: 'Comfortable moving across very different domains, healthcare, property management, retail data, and AI evaluation, without losing attention to detail. Evaluation writing for Project Keystone demands exact, consistent output, a habit that carries over into data cleaning and QA on other projects. Manages several concurrent ventures and contract engagements at once, which takes real prioritization and time management. Works well in remote, distributed teams and comfortable owning a project from initial design through deployment.',
+        references: [
+          { name: 'Maryann Mwikali', role: 'Data Science Mentor, Moringa School', email: 'maryann.mwikali@moringaschool.com' },
+          { name: 'Noah Kandie', role: 'Technical Mentor, Data Visualization, Moringa School', email: 'noah.kandie@moringaschool.com' }
+        ],
+        certificationStatement: 'I, the undersigned, certify that to the best of my knowledge and belief, this CV correctly describes me, my qualifications, and my experience. I understand that any wilful misstatement described herein may lead to my disqualification or dismissal, if engaged.',
+        certificationDate: '10th September 2026',
+        signatureImage: '/uploads/Marcus-electron-sign.png',
+        uploadedCvUrl: '/uploads/Marcus_Kaula_Data_Scientist_CV.pdf',
+        uploadedCvName: 'Marcus_Kaula_Data_Scientist_CV.pdf'
+      },
+      posts: [
+        {
+          id: 'post-1',
+          title: 'Designing Reliable Agentic Workflows with n8n, Apify, and FastAPI',
+          tag: 'AI Engineering',
+          date: '2026-11-10',
+          readTime: '5 min read',
+          published: true,
+          coverImage: '',
+          excerpt: 'How we automate document discovery, voice agent lead routing, and CRM syncing at KezaFlow Enterprises without manual re-entry.',
+          body: 'When building enterprise automation at KezaFlow Enterprises, the biggest failure mode is rarely the language model itself—it is ambiguous state handoffs between steps.\n\nBy combining n8n orchestration, Apify and SearXNG extraction, and Supabase/FastAPI backends with duplicate detection, every lead qualification and document discovery workflow stays auditable, deterministic, and resilient.'
+        },
+        {
+          id: 'post-2',
+          title: 'Six Decades of NTSB Aviation Data: Surfacing Lower-Risk Aircraft Profiles',
+          tag: 'Data Science',
+          date: '2026-10-22',
+          readTime: '6 min read',
+          published: true,
+          coverImage: '',
+          excerpt: 'Cleaning longitudinal NTSB accident records in Python and pandas to power interactive Tableau safety dashboards.',
+          body: 'Analyzing six decades of historical NTSB aviation accident records requires careful normalization across changing reporting standards, aircraft series, and operational categories.\n\nUsing Python and pandas for structured cleaning before building interactive Tableau dashboards allowed us to compare incident rates across aircraft makes and models and translate raw historical logs into clear safety recommendations.'
+        }
+      ],
+      gallery: [
+        {
+          id: 'gal-1',
+          title: 'Workspace & Build Sessions',
+          caption: 'Late-night systems engineering, data pipelines, and product architecture from Nairobi.',
+          tag: 'Workspace',
+          date: '2026-11-15',
+          location: 'Nairobi, Kenya',
+          image: '/uploads/hero-studio.jpg',
+          published: true
+        }
+      ]
+    };
+
+    // ==================== STATE MANAGEMENT ====================
+    let state = loadState();
+    let activeCategory = 'All';
+    let activeBlogTag = 'All';
+    let activeGalleryTag = 'All';
+    let activeAdminTab = 'projects';
+    let isAdminUnlocked = false;
+    let isAdminView = false;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return { ...DEFAULT_STATE, ...parsed };
+        }
+      } catch (e) { /* Canvas sandbox fallback */ }
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function saveState(msg = 'Changes saved') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // If localStorage quota exceeded (e.g., large base64), still keep in memory
+      }
+      renderAll();
+
+
+
+      if (msg) showToast(msg);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 2800);
+    }
+
+    function esc(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    function resolveMedia(url, id) {
+      if (id && sessionMediaUrls[id]) return sessionMediaUrls[id];
+      return url || '';
+    }
+
+    function placeholderVisual(title, subtitle) {
+      return `
+        <div class="w-full h-full bg-obsidian text-white flex flex-col justify-between p-5 border-b border-hairline select-none">
+          <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-white/50">
+            <span>Placeholder</span>
+            <span class="w-2 h-2 bg-emerald inline-block"></span>
+          </div>
+          <div>
+            <div class="text-sm font-mono text-emerald uppercase tracking-wider mb-1">${esc(subtitle)}</div>
+            <div class="text-lg font-semibold leading-snug text-white/90">${esc(title)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== RENDER PUBLIC PORTFOLIO ====================
+    function renderAll() {
+      renderProfile();
+      renderProjects();
+      renderJourney();
+      renderCertificates();
+      renderCV();
+      renderBlog();
+      renderGallery();
+      if (isAdminView) renderAdminPanel();
+    }
+
+    function renderProfile() {
+      const p = state.profile;
+      document.getElementById('header-name').textContent = p.name;
+      document.getElementById('hero-status').textContent = p.status;
+      document.getElementById('hero-location').textContent = p.location;
+      document.getElementById('hero-headline').textContent = p.headline;
+      document.getElementById('hero-subheadline').textContent = p.subheadline;
+      const liUrl = p.linkedinUrl || 'https://www.linkedin.com/in/marcus-kaula-268b1340b';
+      document.getElementById('hero-github-link').href = p.githubUrl || 'https://github.com/kaula12';
+      const heroLi = document.getElementById('hero-linkedin-link');
+      if (heroLi) heroLi.href = liUrl;
+      document.getElementById('hero-image').src = resolveMedia(p.heroImage, 'hero');
+      document.getElementById('about-bio').textContent = p.aboutBio;
+      document.getElementById('about-stack').textContent = p.primaryStack;
+      document.getElementById('stat-projects').textContent = String(state.projects.length);
+      document.getElementById('stat-languages').textContent = p.languages;
+      document.getElementById('cv-name').textContent = p.name;
+      document.getElementById('cv-title-line').textContent = p.role;
+      document.getElementById('footer-name').textContent = p.name;
+      document.getElementById('footer-github').href = p.githubUrl || 'https://github.com/kaula12';
+      const footerLi = document.getElementById('footer-linkedin');
+      if (footerLi) footerLi.href = liUrl;
+      document.getElementById('footer-email').href = 'mailto:' + (p.email || 'marcus@kezaflow.co.ke');
+    }
+
+    function renderProjects() {
+      const cats = ['All', ...new Set(state.projects.map(p => p.category).filter(Boolean))];
+      const filtersEl = document.getElementById('project-filters');
+      filtersEl.innerHTML = cats.map(c => `
+        <button type="button" data-cat="${esc(c)}" class="proj-filter-btn px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider border swiss-transition focus-ring ${activeCategory === c ? 'bg-obsidian text-white border-obsidian' : 'bg-white text-muted border-hairline hover:border-ink hover:text-ink'}">
+          ${esc(c)}
+        </button>
+      `).join('');
+
+      filtersEl.querySelectorAll('.proj-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeCategory = btn.dataset.cat;
+          renderProjects();
+        });
+      });
+
+      const list = activeCategory === 'All' ? state.projects : state.projects.filter(p => p.category === activeCategory);
+      const grid = document.getElementById('projects-grid');
+
+      if (!list.length) {
+        grid.innerHTML = `<div class="col-span-full py-12 text-center border border-hairline text-muted text-sm">No projects in this category yet. Add one in Admin Studio.</div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map((p, idx) => {
+        const imgSrc = resolveMedia(p.image, 'proj-img-' + p.id);
+        const vidSrc = resolveMedia(p.videoUrl, 'proj-vid-' + p.id);
+        return `
+          <article class="group border border-hairline bg-white flex flex-col justify-between hover:border-ink swiss-transition">
+            <div>
+              <div class="aspect-[16/10] bg-stone overflow-hidden relative border-b border-hairline">
+                ${imgSrc
+                  ? `<img src="${esc(imgSrc)}" alt="${esc(p.title)}" class="w-full h-full object-cover group-hover:scale-[1.02] swiss-transition" />`
+                  : placeholderVisual(p.title, p.category)
+                }
+                ${vidSrc ? `<span class="absolute top-3 right-3 bg-emerald text-white text-[10px] font-mono uppercase px-2.5 py-1 tracking-wider">Video Demo</span>` : ''}
+              </div>
+              <div class="p-6 space-y-3">
+                <div class="flex items-center justify-between text-xs font-mono text-muted">
+                  <span class="text-emerald uppercase tracking-wider">${esc(p.category)}</span>
+                  <span class="tabular-nums">${esc(p.year)}</span>
+                </div>
+                <h3 class="text-xl font-semibold text-ink leading-snug">${esc(p.title)}</h3>
+                <p class="text-sm text-muted leading-relaxed">${esc(p.summary)}</p>
+              </div>
+            </div>
+            <div class="px-6 pb-6 pt-2 flex items-center justify-between gap-4">
+              <div class="flex flex-wrap gap-1.5">
+                ${(p.stack || []).slice(0, 3).map(t => `<span class="text-[11px] font-mono px-2 py-0.5 bg-stone border border-hairline text-ink">${esc(t)}</span>`).join('')}
+              </div>
+              <button type="button" data-open-project="${esc(p.id)}" class="shrink-0 text-xs font-mono uppercase tracking-wider text-ink hover:text-emerald inline-flex items-center gap-1 focus-ring">
+                Inspect →
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('[data-open-project]').forEach(btn => {
+        btn.addEventListener('click', () => openProjectModal(btn.dataset.openProject));
+      });
+    }
+
+    function openProjectModal(id) {
+      const p = state.projects.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('pm-category').textContent = `${p.category} · ${p.year}`;
+      document.getElementById('pm-title').textContent = p.title;
+      document.getElementById('pm-summary').textContent = p.summary;
+      document.getElementById('pm-description').textContent = p.description;
+
+      const stage = document.getElementById('pm-media-stage');
+      const vidSrc = resolveMedia(p.videoUrl, 'proj-vid-' + p.id);
+      const imgSrc = resolveMedia(p.image, 'proj-img-' + p.id);
+
+      if (vidSrc) {
+        if (vidSrc.includes('youtube.com/watch') || vidSrc.includes('youtu.be/')) {
+          const ytId = vidSrc.includes('v=') ? vidSrc.split('v=')[1].split('&')[0] : vidSrc.split('/').pop();
+          stage.innerHTML = `<div class="aspect-video"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${esc(ytId)}" title="${esc(p.title)} video" allowfullscreen></iframe></div>`;
+        } else {
+          stage.innerHTML = `<video controls playsinline class="w-full max-h-[420px] bg-obsidian" src="${esc(vidSrc)}"></video>`;
+        }
+      } else if (imgSrc) {
+        stage.innerHTML = `<img src="${esc(imgSrc)}" alt="${esc(p.title)}" class="w-full max-h-[420px] object-cover" />`;
+      } else {
+        stage.innerHTML = `<div class="h-48">${placeholderVisual(p.title, 'Upload an image or video in Admin Studio')}</div>`;
+      }
+
+      document.getElementById('pm-stack').innerHTML = (p.stack || []).map(t => `<span class="text-xs font-mono px-2.5 py-1 bg-stone border border-hairline">${esc(t)}</span>`).join('');
+      const linksEl = document.getElementById('pm-links');
+      linksEl.innerHTML = '';
+      const ghUrl = (p.githubUrl || '').trim();
+      const lvUrl = (p.liveUrl || '').trim();
+      if (ghUrl) {
+        linksEl.innerHTML += `<a href="${esc(ghUrl)}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2.5 bg-obsidian text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald swiss-transition">View on GitHub ↗</a>`;
+      }
+      if (lvUrl) {
+        linksEl.innerHTML += `<a href="${esc(lvUrl)}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2.5 border border-ink text-ink text-xs font-mono uppercase tracking-wider hover:bg-stone swiss-transition">Live Deployment ↗</a>`;
+      }
+      (p.extraLinks || []).forEach(link => {
+        const u = (link && link.url || '').trim();
+        const lbl = (link && link.label || '').trim() || 'External Link';
+        if (u) {
+          linksEl.innerHTML += `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2.5 border border-hairline text-ink text-xs font-mono uppercase tracking-wider hover:border-ink hover:bg-stone swiss-transition">${esc(lbl)} ↗</a>`;
+        }
+      });
+
+      const modal = document.getElementById('project-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function renderJourney() {
+      const el = document.getElementById('journey-list');
+      el.innerHTML = state.journey.map((j, i) => `
+        <div class="py-6 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-start">
+          <div class="sm:col-span-4 text-xs font-mono text-emerald uppercase tracking-wider pt-1">${esc(j.period)}</div>
+          <div class="sm:col-span-8 space-y-1.5">
+            <h3 class="text-lg font-medium text-white">${esc(j.role)}</h3>
+            <div class="text-xs font-mono text-white/60">${esc(j.org)}</div>
+            <p class="text-sm text-white/75 leading-relaxed pt-1">${esc(j.description)}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCertificates() {
+      const grid = document.getElementById('certificates-grid');
+      grid.innerHTML = state.certificates.map(c => {
+        const imgSrc = resolveMedia(c.image, 'cert-img-' + c.id);
+        return `
+          <div class="bg-white border border-hairline p-6 flex flex-col justify-between space-y-5">
+            <div class="space-y-4">
+              <div class="aspect-[16/10] border border-hairline bg-stone overflow-hidden">
+                ${imgSrc
+                  ? `<img src="${esc(imgSrc)}" alt="${esc(c.title)}" class="w-full h-full object-cover" />`
+                  : `<div class="w-full h-full flex flex-col justify-between p-4 bg-white">
+                      <div class="flex justify-between items-center text-[11px] font-mono text-muted">
+                        <span>CREDENTIAL</span>
+                        <span class="text-emerald">VERIFIED</span>
+                      </div>
+                      <div>
+                        <div class="text-xs font-mono text-muted">${esc(c.issuer)}</div>
+                        <div class="text-base font-semibold text-ink mt-0.5">${esc(c.title)}</div>
+                      </div>
+                    </div>`
+                }
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-xs font-mono text-muted">
+                  <span>${esc(c.issuer)}</span>
+                  <span class="tabular-nums">${esc(c.date)}</span>
+                </div>
+                <h3 class="text-lg font-semibold text-ink mt-1">${esc(c.title)}</h3>
+                ${c.credentialId ? `<div class="text-xs font-mono text-muted mt-1">ID: ${esc(c.credentialId)}</div>` : ''}
+              </div>
+            </div>
+            ${c.verifyUrl ? `<a href="${esc(c.verifyUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs font-mono uppercase tracking-wider text-emerald hover:underline">Verify Credential →</a>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCV() {
+      const cv = state.cv;
+      const dlBtn = document.getElementById('download-uploaded-cv-btn');
+      const cvUrl = resolveMedia(cv.uploadedCvUrl, 'cv-pdf');
+      if (cvUrl) {
+        dlBtn.href = cvUrl;
+        dlBtn.download = cv.uploadedCvName || 'Marcus_Kaula_CV.pdf';
+        dlBtn.classList.remove('hidden');
+      } else {
+        dlBtn.classList.add('hidden');
+      }
+
+      document.getElementById('cv-content').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Profile Summary</div>
+          <div class="md:col-span-9 text-sm sm:text-base text-ink leading-relaxed">${esc(cv.summary)}</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Experience</div>
+          <div class="md:col-span-9 space-y-6">
+            ${(cv.experience || []).map(exp => `
+              <div>
+                <div class="flex flex-wrap justify-between gap-2">
+                  <h4 class="font-semibold text-ink">${esc(exp.title)} — <span class="text-emerald">${esc(exp.company)}</span></h4>
+                  <span class="text-xs font-mono text-muted tabular-nums">${esc(exp.period)}</span>
+                </div>
+                <ul class="mt-2 space-y-1 text-sm text-muted list-disc list-inside">
+                  ${String(exp.bullets || '').split('\n').filter(Boolean).map(b => `<li>${esc(b)}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Education</div>
+          <div class="md:col-span-9 space-y-3">
+            ${(cv.education || []).map(ed => `
+              <div class="flex flex-wrap justify-between gap-2 text-sm">
+                <div><span class="font-medium text-ink">${esc(ed.program)}</span> <span class="text-muted">· ${esc(ed.institution)}</span></div>
+                <span class="font-mono text-xs text-muted tabular-nums">${esc(ed.year)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Core Competencies</div>
+          <div class="md:col-span-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            ${(cv.competencies || []).map(comp => `
+              <div class="text-xs font-mono px-3 py-2 bg-stone border border-hairline text-ink">${esc(comp)}</div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Technical Stack</div>
+          <div class="md:col-span-9 space-y-3">
+            ${(cv.skills || []).map(sk => `
+              <div class="text-sm">
+                <span class="font-mono text-xs uppercase text-emerald mr-2">${esc(sk.group)}:</span>
+                <span class="text-ink">${esc(sk.items)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        ${cv.softSkills ? `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Soft Skills</div>
+          <div class="md:col-span-9 text-sm text-muted leading-relaxed">${esc(cv.softSkills)}</div>
+        </div>` : ''}
+
+        ${(cv.references && cv.references.length) ? `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">References</div>
+          <div class="md:col-span-9 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            ${cv.references.map(ref => `
+              <div class="border border-hairline p-4 bg-stone/50">
+                <div class="font-semibold text-sm text-ink">${esc(ref.name)}</div>
+                <div class="text-xs text-muted mt-0.5">${esc(ref.role)}</div>
+                <a href="mailto:${esc(ref.email)}" class="text-xs font-mono text-emerald hover:underline mt-1.5 inline-block">${esc(ref.email)}</a>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+
+        ${cv.certificationStatement ? `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-8 border-t border-hairline">
+          <div class="md:col-span-3 text-xs font-mono uppercase tracking-wider text-muted">Certification</div>
+          <div class="md:col-span-9 space-y-4">
+            <p class="text-xs sm:text-sm text-muted italic leading-relaxed">${esc(cv.certificationStatement)}</p>
+            <div class="flex flex-wrap items-end justify-between gap-6 pt-2">
+              <div>
+                ${resolveMedia(cv.signatureImage, 'cv-sign') ? `<img src="${esc(resolveMedia(cv.signatureImage, 'cv-sign'))}" alt="Marcus Kaula Signature" class="h-14 w-auto object-contain mb-1" />` : ''}
+                <div class="text-sm font-semibold text-ink">${esc(state.profile.name)}</div>
+              </div>
+              <div class="text-xs font-mono text-muted">Date: ${esc(cv.certificationDate || '10th September 2026')}</div>
+            </div>
+          </div>
+        </div>` : ''}
+      `;
+    }
+
+    function renderBlog() {
+      const published = state.posts.filter(p => p.published);
+      const tags = ['All', ...new Set(published.map(p => p.tag).filter(Boolean))];
+      const filtersEl = document.getElementById('blog-filters');
+      filtersEl.innerHTML = tags.map(t => `
+        <button type="button" data-blog-tag="${esc(t)}" class="blog-filter-btn px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider border swiss-transition focus-ring ${activeBlogTag === t ? 'bg-obsidian text-white border-obsidian' : 'bg-white text-muted border-hairline hover:border-ink hover:text-ink'}">
+          ${esc(t)}
+        </button>
+      `).join('');
+
+      filtersEl.querySelectorAll('.blog-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeBlogTag = btn.dataset.blogTag;
+          renderBlog();
+        });
+      });
+
+      const list = activeBlogTag === 'All' ? published : published.filter(p => p.tag === activeBlogTag);
+      const grid = document.getElementById('blog-grid');
+      if (!list.length) {
+        grid.innerHTML = `<div class="col-span-full py-12 text-center border border-hairline text-muted text-sm">No published posts yet. Write one in Admin Studio.</div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(post => {
+        const cover = resolveMedia(post.coverImage, 'post-img-' + post.id);
+        return `
+          <article class="border border-hairline bg-white flex flex-col justify-between p-6 hover:border-ink swiss-transition">
+            <div class="space-y-4">
+              ${cover ? `<div class="aspect-[16/9] border border-hairline overflow-hidden bg-stone"><img src="${esc(cover)}" alt="${esc(post.title)}" class="w-full h-full object-cover" /></div>` : ''}
+              <div class="flex items-center justify-between text-xs font-mono text-muted">
+                <span class="text-emerald uppercase tracking-wider">${esc(post.tag)}</span>
+                <span class="tabular-nums">${esc(post.date)}</span>
+              </div>
+              <h3 class="text-xl font-semibold text-ink leading-snug">${esc(post.title)}</h3>
+              <p class="text-sm text-muted leading-relaxed">${esc(post.excerpt)}</p>
+            </div>
+            <div class="pt-5 mt-5 border-t border-hairline flex items-center justify-between text-xs font-mono">
+              <span class="text-muted">${esc(post.readTime)}</span>
+              <button type="button" data-open-post="${esc(post.id)}" class="uppercase tracking-wider text-ink hover:text-emerald focus-ring">Read Article →</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('[data-open-post]').forEach(btn => {
+        btn.addEventListener('click', () => openBlogModal(btn.dataset.openPost));
+      });
+    }
+
+    function openBlogModal(id) {
+      const post = state.posts.find(x => x.id === id);
+      if (!post) return;
+      document.getElementById('bm-tag').textContent = post.tag;
+      document.getElementById('bm-date').textContent = post.date;
+      document.getElementById('bm-readtime').textContent = post.readTime;
+      document.getElementById('bm-title').textContent = post.title;
+      document.getElementById('bm-body').textContent = post.body;
+      const cover = resolveMedia(post.coverImage, 'post-img-' + post.id);
+      const wrap = document.getElementById('bm-cover-wrap');
+      if (cover) {
+        document.getElementById('bm-cover').src = cover;
+        wrap.classList.remove('hidden');
+      } else {
+        wrap.classList.add('hidden');
+      }
+      const modal = document.getElementById('blog-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function renderGallery() {
+      const items = (state.gallery || []).filter(g => g.published !== false);
+      const tags = ['All', ...new Set(items.map(g => g.tag).filter(Boolean))];
+      const filtersEl = document.getElementById('gallery-filters');
+      if (filtersEl) {
+        filtersEl.innerHTML = tags.map(t => `
+          <button type="button" data-gallery-tag="${esc(t)}" class="gallery-filter-btn px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider border swiss-transition focus-ring ${activeGalleryTag === t ? 'bg-obsidian text-white border-obsidian' : 'bg-white text-muted border-hairline hover:border-ink hover:text-ink'}">
+            ${esc(t)}
+          </button>
+        `).join('');
+        filtersEl.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeGalleryTag = btn.dataset.galleryTag;
+            renderGallery();
+          });
+        });
+      }
+
+      const grid = document.getElementById('gallery-grid');
+      if (!grid) return;
+      const list = activeGalleryTag === 'All' ? items : items.filter(g => g.tag === activeGalleryTag);
+      if (!list.length) {
+        grid.innerHTML = `<div class="col-span-full py-12 text-center border border-hairline bg-white text-muted text-sm">No photos posted yet.</div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(g => {
+        const imgSrc = resolveMedia(g.image, 'gal-img-' + g.id);
+        return `
+          <figure class="group border border-hairline bg-white overflow-hidden hover:border-ink swiss-transition cursor-pointer flex flex-col" data-open-gallery="${esc(g.id)}">
+            <div class="aspect-[4/3] bg-obsidian overflow-hidden relative border-b border-hairline">
+              ${imgSrc
+                ? `<img src="${esc(imgSrc)}" alt="${esc(g.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-[1.03] swiss-transition" />`
+                : placeholderVisual(g.title || 'Photo', g.tag || 'Gallery')
+              }
+            </div>
+            <figcaption class="p-5 flex-1 flex flex-col justify-between space-y-2">
+              <div>
+                <div class="flex items-center justify-between text-[11px] font-mono text-muted">
+                  <span class="text-emerald uppercase tracking-wider">${esc(g.tag || 'Moment')}</span>
+                  <span class="tabular-nums">${esc(g.date || '')}</span>
+                </div>
+                <h3 class="text-base font-semibold text-ink mt-1.5 leading-snug">${esc(g.title || '')}</h3>
+                ${g.caption ? `<p class="text-xs text-muted mt-1 line-clamp-2 leading-relaxed">${esc(g.caption)}</p>` : ''}
+              </div>
+              ${g.location ? `<div class="text-[11px] font-mono text-muted pt-2 border-t border-hairline">${esc(g.location)}</div>` : ''}
+            </figcaption>
+          </figure>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('[data-open-gallery]').forEach(card => {
+        card.addEventListener('click', () => openGalleryModal(card.dataset.openGallery));
+      });
+    }
+
+    function openGalleryModal(id) {
+      const item = (state.gallery || []).find(x => x.id === id);
+      if (!item) return;
+      document.getElementById('gm-tag').textContent = item.tag || 'Moment';
+      document.getElementById('gm-date').textContent = item.date || '';
+      const locEl = document.getElementById('gm-location');
+      const sepEl = document.getElementById('gm-location-sep');
+      if (item.location) {
+        locEl.textContent = item.location;
+        locEl.classList.remove('hidden');
+        sepEl.classList.remove('hidden');
+      } else {
+        locEl.classList.add('hidden');
+        sepEl.classList.add('hidden');
+      }
+      document.getElementById('gm-image').src = resolveMedia(item.image, 'gal-img-' + item.id);
+      document.getElementById('gm-image').alt = item.title || 'Gallery photo';
+      document.getElementById('gm-title').textContent = item.title || '';
+      document.getElementById('gm-caption').textContent = item.caption || '';
+      const modal = document.getElementById('gallery-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // ==================== ADMIN STUDIO ====================
+    function toggleAdmin(force) {
+      if (typeof force === 'boolean') isAdminView = force;
+      else isAdminView = !isAdminView;
+
+      if (isAdminView && !isAdminUnlocked) {
+        isAdminView = false;
+        const authModal = document.getElementById('auth-modal');
+        authModal.classList.remove('hidden');
+        authModal.classList.add('flex');
+        document.getElementById('auth-passcode').focus();
+        return;
+      }
+
+      document.getElementById('public-view').classList.toggle('hidden', isAdminView);
+      document.getElementById('admin-view').classList.toggle('hidden', !isAdminView);
+      const btnLbl = document.getElementById('admin-btn-label'); if (btnLbl) btnLbl.textContent = isAdminView ? 'View Live Site' : 'Admin Studio';
+      if (isAdminView) renderAdminPanel();
+    }
+
+    function handleFileUpload(file, sessionKey, onDone) {
+      if (!file) return;
+      const objectUrl = URL.createObjectURL(file);
+      sessionMediaUrls[sessionKey] = objectUrl;
+      if (file.size < 1800000 && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = () => onDone(reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        onDone(objectUrl);
+      }
+    }
+
+    function renderAdminPanel() {
+      const tabs = [
+        { id: 'projects', label: 'Projects & Videos' },
+        { id: 'blog', label: 'Blog / Journal' },
+        { id: 'gallery', label: 'Gallery / Photos' },
+        { id: 'profile', label: 'Profile & Hero' },
+        { id: 'journey', label: 'Journey' },
+        { id: 'certificates', label: 'Certificates' },
+        { id: 'cv', label: 'CV / Resume' }
+      ];
+      document.getElementById('admin-tabs').innerHTML = tabs.map(t => `
+        <button type="button" data-admin-tab="${t.id}" class="px-4 py-3.5 text-xs font-mono uppercase tracking-wider border-b-2 swiss-transition ${activeAdminTab === t.id ? 'border-emerald text-ink font-semibold' : 'border-transparent text-muted hover:text-ink'}">
+          ${t.label}
+        </button>
+      `).join('');
+
+      document.querySelectorAll('[data-admin-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeAdminTab = btn.dataset.adminTab;
+          renderAdminPanel();
+        });
+      });
+
+      const panel = document.getElementById('admin-panel');
+      if (activeAdminTab === 'profile') renderAdminProfile(panel);
+      else if (activeAdminTab === 'projects') renderAdminProjects(panel);
+      else if (activeAdminTab === 'journey') renderAdminJourney(panel);
+      else if (activeAdminTab === 'certificates') renderAdminCertificates(panel);
+      else if (activeAdminTab === 'cv') renderAdminCV(panel);
+      else if (activeAdminTab === 'blog') renderAdminBlog(panel);
+      else if (activeAdminTab === 'gallery') renderAdminGallery(panel);
+    }
+
+    function renderAdminProfile(panel) {
+      const p = state.profile;
+      panel.innerHTML = `
+        <form id="admin-profile-form" class="space-y-6 max-w-3xl">
+          <h2 class="text-xl font-semibold">Profile, Hero &amp; Placeholder Image</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Full Name</label><input name="name" value="${esc(p.name)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Location</label><input name="location" value="${esc(p.location)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Availability Status</label><input name="status" value="${esc(p.status)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">GitHub URL</label><input name="githubUrl" value="${esc(p.githubUrl)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">LinkedIn URL</label><input name="linkedinUrl" value="${esc(p.linkedinUrl || 'https://www.linkedin.com/in/marcus-kaula-268b1340b')}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Contact Email</label><input name="email" value="${esc(p.email)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Languages</label><input name="languages" value="${esc(p.languages)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Admin Passcode (Leave blank to keep current)</label><input name="passcode" type="password" value="${esc(sessionStorage.getItem('mk_admin_passcode') || '')}" placeholder="••••••••" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+          </div>
+          <div><label class="block text-xs font-mono uppercase text-muted mb-1">Hero Headline</label><input name="headline" value="${esc(p.headline)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+          <div><label class="block text-xs font-mono uppercase text-muted mb-1">Hero Subheadline</label><textarea name="subheadline" rows="2" class="w-full border border-hairline px-3 py-2 text-sm">${esc(p.subheadline)}</textarea></div>
+          <div><label class="block text-xs font-mono uppercase text-muted mb-1">About / Journey Bio</label><textarea name="aboutBio" rows="3" class="w-full border border-hairline px-3 py-2 text-sm">${esc(p.aboutBio)}</textarea></div>
+          <div><label class="block text-xs font-mono uppercase text-muted mb-1">Primary Stack</label><input name="primaryStack" value="${esc(p.primaryStack)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+          <div class="p-4 bg-stone border border-hairline space-y-3">
+            <div class="text-xs font-mono uppercase text-muted">Hero Image (Replace Placeholder)</div>
+            <div class="flex flex-wrap items-center gap-4">
+              <input id="hero-img-upload" type="file" accept="image/*" class="text-xs" />
+              <input name="heroImage" value="${esc(p.heroImage)}" placeholder="Or paste image URL" class="flex-1 border border-hairline px-3 py-2 text-sm bg-white" />
+            </div>
+          </div>
+          <button type="submit" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save Profile</button>
+        </form>
+      `;
+      document.getElementById('hero-img-upload').addEventListener('change', e => {
+        handleFileUpload(e.target.files[0], 'hero', url => {
+          state.profile.heroImage = url;
+          saveState('Hero image updated');
+        });
+      });
+      document.getElementById('admin-profile-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        for (const [k, v] of fd.entries()) {
+          if (k === 'passcode') {
+            if (String(v).trim()) {
+              state.profile.passcode = String(v).trim();
+              sessionStorage.setItem('mk_admin_passcode', String(v).trim());
+            }
+          } else {
+            state.profile[k] = v;
+          }
+        }
+        saveState('Profile updated');
+      });
+    }
+
+    function renderAdminProjects(panel) {
+      panel.innerHTML = `
+        <div class="space-y-8">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-semibold">Projects, Images &amp; Video Uploads</h2>
+              <p class="text-sm text-muted">Upload MP4/WebM demo videos or cover images, edit descriptions, or add new projects.</p>
+            </div>
+            <button id="add-project-btn" type="button" class="px-4 py-2 bg-emerald text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald-dark">+ Add Project</button>
+          </div>
+          <div id="admin-projects-list" class="space-y-6">
+            ${state.projects.map((p, idx) => `
+              <div class="border border-hairline p-5 bg-stone/50 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-mono text-emerald uppercase">#${idx + 1} · ${esc(p.id)}</span>
+                  <button type="button" data-del-proj="${esc(p.id)}" class="text-xs font-mono text-red-600 hover:underline">Delete Project</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Title</label><input data-pf="${esc(p.id)}:title" value="${esc(p.title)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Category</label><input data-pf="${esc(p.id)}:category" value="${esc(p.category)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Year</label><input data-pf="${esc(p.id)}:year" value="${esc(p.year)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                </div>
+                <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Short Summary</label><input data-pf="${esc(p.id)}:summary" value="${esc(p.summary)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Full Description &amp; Architecture</label><textarea data-pf="${esc(p.id)}:description" rows="2" class="w-full border border-hairline bg-white px-3 py-2 text-sm">${esc(p.description)}</textarea></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Tech Stack (comma-separated)</label><input data-pstack="${esc(p.id)}" value="${esc((p.stack || []).join(', '))}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">GitHub URL (leave blank to hide button)</label><input data-pf="${esc(p.id)}:githubUrl" value="${esc(p.githubUrl || '')}" placeholder="https://github.com/..." class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Live / Deployment URL (optional)</label><input data-pf="${esc(p.id)}:liveUrl" value="${esc(p.liveUrl || '')}" placeholder="https://your-app.com" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-mono uppercase text-muted mb-1">Other Links (optional — one per line: Label | https://...)</label>
+                  <textarea data-pextra="${esc(p.id)}" rows="2" placeholder="Tableau Dashboard | https://public.tableau.com/...&#10;Case Study | https://notion.so/..." class="w-full border border-hairline bg-white px-3 py-2 text-xs font-mono">${esc((p.extraLinks || []).map(l => `${l.label} | ${l.url}`).join('\n'))}</textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-hairline">
+                  <div class="space-y-1.5">
+                    <label class="block text-[11px] font-mono uppercase text-muted">Project Cover Image (Upload or URL)</label>
+                    <input type="file" accept="image/*" data-pimg-file="${esc(p.id)}" class="text-xs block" />
+                    <input data-pf="${esc(p.id)}:image" value="${esc(p.image)}" placeholder="Image URL" class="w-full border border-hairline bg-white px-3 py-1.5 text-xs" />
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="block text-[11px] font-mono uppercase text-muted">Demo Video (Upload MP4/WebM or YouTube/MP4 URL)</label>
+                    <input type="file" accept="video/mp4,video/webm,video/*" data-pvid-file="${esc(p.id)}" class="text-xs block" />
+                    <input data-pf="${esc(p.id)}:videoUrl" value="${esc(p.videoUrl)}" placeholder="Video URL (MP4 / YouTube)" class="w-full border border-hairline bg-white px-3 py-1.5 text-xs" />
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <button id="save-projects-btn" type="button" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save All Projects</button>
+        </div>
+      `;
+
+      document.getElementById('add-project-btn').addEventListener('click', () => {
+        state.projects.unshift({
+          id: 'proj-' + Date.now(),
+          title: 'New Project',
+          category: 'AI & Automation',
+          year: '2026',
+          summary: 'Concise overview of the problem solved and system built.',
+          description: 'Detailed architecture, dataset, and engineering outcomes.',
+          stack: ['Python', 'FastAPI'],
+          githubUrl: '',
+          liveUrl: '',
+          extraLinks: [],
+          image: '',
+          videoUrl: '',
+          featured: false
+        });
+        saveState('Added new project');
+      });
+
+      panel.querySelectorAll('[data-del-proj]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.projects = state.projects.filter(x => x.id !== btn.dataset.delProj);
+          saveState('Project deleted');
+        });
+      });
+
+      panel.querySelectorAll('[data-pimg-file]').forEach(inp => {
+        inp.addEventListener('change', e => {
+          const id = inp.dataset.pimgFile;
+          handleFileUpload(e.target.files[0], 'proj-img-' + id, url => {
+            const proj = state.projects.find(x => x.id === id);
+            if (proj) proj.image = url;
+            saveState('Project image uploaded');
+          });
+        });
+      });
+
+      panel.querySelectorAll('[data-pvid-file]').forEach(inp => {
+        inp.addEventListener('change', e => {
+          const id = inp.dataset.pvidFile;
+          handleFileUpload(e.target.files[0], 'proj-vid-' + id, url => {
+            const proj = state.projects.find(x => x.id === id);
+            if (proj) proj.videoUrl = url;
+            saveState('Project video attached');
+          });
+        });
+      });
+
+      document.getElementById('save-projects-btn').addEventListener('click', () => {
+        panel.querySelectorAll('[data-pf]').forEach(el => {
+          const [id, field] = el.dataset.pf.split(':');
+          const proj = state.projects.find(x => x.id === id);
+          if (proj) proj[field] = el.value;
+        });
+        panel.querySelectorAll('[data-pstack]').forEach(el => {
+          const proj = state.projects.find(x => x.id === el.dataset.pstack);
+          if (proj) proj.stack = el.value.split(',').map(s => s.trim()).filter(Boolean);
+        });
+        panel.querySelectorAll('[data-pextra]').forEach(el => {
+          const proj = state.projects.find(x => x.id === el.dataset.pextra);
+          if (proj) {
+            proj.extraLinks = el.value
+              .split('\n')
+              .map(line => line.trim())
+              .filter(Boolean)
+              .map(line => {
+                const parts = line.split('|');
+                if (parts.length >= 2) {
+                  return { label: parts[0].trim(), url: parts.slice(1).join('|').trim() };
+                }
+                return { label: 'View Work', url: line };
+              })
+              .filter(l => l.url);
+            proj.githubUrl = (proj.githubUrl || '').trim();
+            proj.liveUrl = (proj.liveUrl || '').trim();
+          }
+        });
+        saveState('All projects saved');
+      });
+    }
+
+    function renderAdminBlog(panel) {
+      panel.innerHTML = `
+        <div class="space-y-8">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-semibold">Blog / Journal Manager</h2>
+              <p class="text-sm text-muted">Write, edit, upload cover images, and toggle published status.</p>
+            </div>
+            <button id="add-post-btn" type="button" class="px-4 py-2 bg-emerald text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald-dark">+ New Post</button>
+          </div>
+          <div class="space-y-6">
+            ${state.posts.map(post => `
+              <div class="border border-hairline p-5 bg-stone/50 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <label class="inline-flex items-center gap-2 text-xs font-mono uppercase cursor-pointer">
+                    <input type="checkbox" data-bpub="${esc(post.id)}" ${post.published ? 'checked' : ''} class="accent-emerald" />
+                    <span>Published</span>
+                  </label>
+                  <button type="button" data-del-post="${esc(post.id)}" class="text-xs font-mono text-red-600 hover:underline">Delete Post</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div class="md:col-span-2"><label class="block text-[11px] font-mono uppercase text-muted mb-1">Title</label><input data-bf="${esc(post.id)}:title" value="${esc(post.title)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Tag</label><input data-bf="${esc(post.id)}:tag" value="${esc(post.tag)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                  <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Date</label><input data-bf="${esc(post.id)}:date" value="${esc(post.date)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                </div>
+                <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Excerpt</label><input data-bf="${esc(post.id)}:excerpt" value="${esc(post.excerpt)}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Article Body</label><textarea data-bf="${esc(post.id)}:body" rows="4" class="w-full border border-hairline bg-white px-3 py-2 text-sm">${esc(post.body)}</textarea></div>
+                <div class="flex flex-wrap items-center gap-4">
+                  <input type="file" accept="image/*" data-bimg-file="${esc(post.id)}" class="text-xs" />
+                  <input data-bf="${esc(post.id)}:readTime" value="${esc(post.readTime)}" placeholder="5 min read" class="border border-hairline bg-white px-3 py-1.5 text-xs" />
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <button id="save-posts-btn" type="button" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save Blog Posts</button>
+        </div>
+      `;
+
+      document.getElementById('add-post-btn').addEventListener('click', () => {
+        state.posts.unshift({
+          id: 'post-' + Date.now(),
+          title: 'Untitled Engineering Note',
+          tag: 'Engineering',
+          date: new Date().toISOString().slice(0, 10),
+          readTime: '4 min read',
+          published: true,
+          coverImage: '',
+          excerpt: 'Short summary of this article.',
+          body: 'Write your full post here...'
+        });
+        saveState('New blog post created');
+      });
+
+      panel.querySelectorAll('[data-del-post]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.posts = state.posts.filter(x => x.id !== btn.dataset.delPost);
+          saveState('Post deleted');
+        });
+      });
+
+      panel.querySelectorAll('[data-bimg-file]').forEach(inp => {
+        inp.addEventListener('change', e => {
+          const id = inp.dataset.bimgFile;
+          handleFileUpload(e.target.files[0], 'post-img-' + id, url => {
+            const p = state.posts.find(x => x.id === id);
+            if (p) p.coverImage = url;
+            saveState('Blog cover image uploaded');
+          });
+        });
+      });
+
+      document.getElementById('save-posts-btn').addEventListener('click', () => {
+        panel.querySelectorAll('[data-bf]').forEach(el => {
+          const [id, field] = el.dataset.bf.split(':');
+          const p = state.posts.find(x => x.id === id);
+          if (p) p[field] = el.value;
+        });
+        panel.querySelectorAll('[data-bpub]').forEach(el => {
+          const p = state.posts.find(x => x.id === el.dataset.bpub);
+          if (p) p.published = el.checked;
+        });
+        saveState('Blog posts saved');
+      });
+    }
+
+    function renderAdminGallery(panel) {
+      if (!Array.isArray(state.gallery)) state.gallery = [];
+      panel.innerHTML = `
+        <div class="space-y-8">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-semibold">Personal Gallery &amp; Visual Journal</h2>
+              <p class="text-sm text-muted">Post personal photos, events, workspace shots, or behind-the-scenes moments. Images upload straight to Supabase Storage when connected.</p>
+            </div>
+            <button id="add-gallery-btn" type="button" class="px-4 py-2 bg-emerald text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald-dark">+ Add Photo</button>
+          </div>
+          <div class="space-y-6">
+            ${state.gallery.map(g => {
+              const thumb = resolveMedia(g.image, 'gal-img-' + g.id);
+              return `
+                <div class="border border-hairline p-5 bg-stone/50 space-y-4">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <label class="inline-flex items-center gap-2 text-xs font-mono uppercase cursor-pointer">
+                      <input type="checkbox" data-gpub="${esc(g.id)}" ${g.published !== false ? 'checked' : ''} class="accent-emerald" />
+                      <span>Published</span>
+                    </label>
+                    <button type="button" data-del-gal="${esc(g.id)}" class="text-xs font-mono text-red-600 hover:underline">Delete Photo</button>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                    <div class="aspect-[4/3] bg-obsidian border border-hairline overflow-hidden">
+                      ${thumb ? `<img src="${esc(thumb)}" alt="" class="w-full h-full object-cover" />` : `<div class="w-full h-full flex items-center justify-center text-[11px] font-mono text-white/50">No Image</div>`}
+                    </div>
+                    <div class="md:col-span-3 space-y-3">
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Title</label><input data-gf="${esc(g.id)}:title" value="${esc(g.title || '')}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                        <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Tag (e.g. Personal, Events)</label><input data-gf="${esc(g.id)}:tag" value="${esc(g.tag || '')}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                        <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Date</label><input data-gf="${esc(g.id)}:date" value="${esc(g.date || '')}" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                      </div>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Location (optional)</label><input data-gf="${esc(g.id)}:location" value="${esc(g.location || '')}" placeholder="Nairobi, Kenya" class="w-full border border-hairline bg-white px-3 py-2 text-sm" /></div>
+                        <div>
+                          <label class="block text-[11px] font-mono uppercase text-muted mb-1">Upload Photo or Paste URL</label>
+                          <div class="flex items-center gap-2">
+                            <input type="file" accept="image/*" data-gimg-file="${esc(g.id)}" class="text-xs w-44" />
+                            <input data-gf="${esc(g.id)}:image" value="${esc(g.image || '')}" placeholder="Image URL" class="flex-1 border border-hairline bg-white px-2.5 py-1.5 text-xs" />
+                          </div>
+                        </div>
+                      </div>
+                      <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Caption / Story</label><textarea data-gf="${esc(g.id)}:caption" rows="2" class="w-full border border-hairline bg-white px-3 py-2 text-sm">${esc(g.caption || '')}</textarea></div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <button id="save-gallery-btn" type="button" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save Gallery</button>
+        </div>
+      `;
+
+      document.getElementById('add-gallery-btn').addEventListener('click', () => {
+        state.gallery.unshift({
+          id: 'gal-' + Date.now(),
+          title: 'New Photo',
+          caption: '',
+          tag: 'Personal',
+          date: new Date().toISOString().slice(0, 10),
+          location: 'Nairobi, Kenya',
+          image: '',
+          published: true
+        });
+        saveState('New photo slot added');
+      });
+
+      panel.querySelectorAll('[data-del-gal]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.gallery = state.gallery.filter(x => x.id !== btn.dataset.delGal);
+          saveState('Photo deleted');
+        });
+      });
+
+      panel.querySelectorAll('[data-gimg-file]').forEach(inp => {
+        inp.addEventListener('change', e => {
+          const id = inp.dataset.gimgFile;
+          handleFileUpload(e.target.files[0], 'gal-img-' + id, url => {
+            const g = state.gallery.find(x => x.id === id);
+            if (g) g.image = url;
+            saveState('Gallery photo uploaded');
+          });
+        });
+      });
+
+      document.getElementById('save-gallery-btn').addEventListener('click', () => {
+        panel.querySelectorAll('[data-gf]').forEach(el => {
+          const [id, field] = el.dataset.gf.split(':');
+          const g = state.gallery.find(x => x.id === id);
+          if (g) g[field] = el.value;
+        });
+        panel.querySelectorAll('[data-gpub]').forEach(el => {
+          const g = state.gallery.find(x => x.id === el.dataset.gpub);
+          if (g) g.published = el.checked;
+        });
+        saveState('Gallery saved');
+      });
+    }
+
+    function renderAdminJourney(panel) {
+      panel.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Journey Milestones</h2>
+            <button id="add-journey-btn" type="button" class="px-4 py-2 bg-emerald text-white text-xs font-mono uppercase">+ Add Milestone</button>
+          </div>
+          <div class="space-y-4">
+            ${state.journey.map(j => `
+              <div class="border border-hairline p-4 bg-stone/50 space-y-3">
+                <div class="flex justify-end"><button type="button" data-del-j="${esc(j.id)}" class="text-xs font-mono text-red-600 hover:underline">Delete</button></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input data-jf="${esc(j.id)}:period" value="${esc(j.period)}" placeholder="Period" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-jf="${esc(j.id)}:role" value="${esc(j.role)}" placeholder="Role" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-jf="${esc(j.id)}:org" value="${esc(j.org)}" placeholder="Organization" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                </div>
+                <textarea data-jf="${esc(j.id)}:description" rows="2" class="w-full border border-hairline bg-white px-3 py-2 text-sm">${esc(j.description)}</textarea>
+              </div>
+            `).join('')}
+          </div>
+          <button id="save-journey-btn" type="button" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save Journey</button>
+        </div>
+      `;
+      document.getElementById('add-journey-btn').addEventListener('click', () => {
+        state.journey.unshift({ id: 'j-' + Date.now(), period: '2026', role: 'New Role', org: 'Organization', description: 'Milestone details...' });
+        saveState('Milestone added');
+      });
+      panel.querySelectorAll('[data-del-j]').forEach(b => b.addEventListener('click', () => {
+        state.journey = state.journey.filter(x => x.id !== b.dataset.delJ);
+        saveState('Milestone removed');
+      }));
+      document.getElementById('save-journey-btn').addEventListener('click', () => {
+        panel.querySelectorAll('[data-jf]').forEach(el => {
+          const [id, f] = el.dataset.jf.split(':');
+          const item = state.journey.find(x => x.id === id);
+          if (item) item[f] = el.value;
+        });
+        saveState('Journey saved');
+      });
+    }
+
+    function renderAdminCertificates(panel) {
+      panel.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Certificates &amp; Credentials</h2>
+            <button id="add-cert-btn" type="button" class="px-4 py-2 bg-emerald text-white text-xs font-mono uppercase">+ Add Certificate</button>
+          </div>
+          <div class="space-y-4">
+            ${state.certificates.map(c => `
+              <div class="border border-hairline p-4 bg-stone/50 space-y-3">
+                <div class="flex justify-end"><button type="button" data-del-c="${esc(c.id)}" class="text-xs font-mono text-red-600 hover:underline">Delete</button></div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <input data-cf="${esc(c.id)}:title" value="${esc(c.title)}" placeholder="Title" class="md:col-span-2 border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-cf="${esc(c.id)}:issuer" value="${esc(c.issuer)}" placeholder="Issuer" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-cf="${esc(c.id)}:date" value="${esc(c.date)}" placeholder="Date" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+                  <input data-cf="${esc(c.id)}:credentialId" value="${esc(c.credentialId)}" placeholder="Credential ID" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-cf="${esc(c.id)}:verifyUrl" value="${esc(c.verifyUrl)}" placeholder="Verification URL" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input type="file" accept="image/*" data-cimg-file="${esc(c.id)}" class="text-xs" />
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <button id="save-certs-btn" type="button" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save Certificates</button>
+        </div>
+      `;
+      document.getElementById('add-cert-btn').addEventListener('click', () => {
+        state.certificates.unshift({ id: 'cert-' + Date.now(), title: 'New Certificate', issuer: 'Issuer', date: '2026', credentialId: '', verifyUrl: '', image: '' });
+        saveState('Certificate added');
+      });
+      panel.querySelectorAll('[data-del-c]').forEach(b => b.addEventListener('click', () => {
+        state.certificates = state.certificates.filter(x => x.id !== b.dataset.delC);
+        saveState('Certificate removed');
+      }));
+      panel.querySelectorAll('[data-cimg-file]').forEach(inp => {
+        inp.addEventListener('change', e => {
+          const id = inp.dataset.cimgFile;
+          handleFileUpload(e.target.files[0], 'cert-img-' + id, url => {
+            const c = state.certificates.find(x => x.id === id);
+            if (c) c.image = url;
+            saveState('Certificate image uploaded');
+          });
+        });
+      });
+      document.getElementById('save-certs-btn').addEventListener('click', () => {
+        panel.querySelectorAll('[data-cf]').forEach(el => {
+          const [id, f] = el.dataset.cf.split(':');
+          const c = state.certificates.find(x => x.id === id);
+          if (c) c[f] = el.value;
+        });
+        saveState('Certificates saved');
+      });
+    }
+
+    function renderAdminCV(panel) {
+      const cv = state.cv;
+      panel.innerHTML = `
+        <div class="space-y-6 max-w-4xl">
+          <h2 class="text-xl font-semibold">CV / Resume Editor</h2>
+          <div>
+            <label class="block text-xs font-mono uppercase text-muted mb-1">CV Summary</label>
+            <textarea id="cv-summary-input" rows="3" class="w-full border border-hairline px-3 py-2 text-sm">${esc(cv.summary)}</textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 bg-stone border border-hairline space-y-2">
+              <label class="block text-xs font-mono uppercase text-muted">Upload Custom CV PDF</label>
+              <input id="cv-pdf-upload" type="file" accept="application/pdf" class="text-xs" />
+            </div>
+            <div class="p-4 bg-stone border border-hairline space-y-2">
+              <label class="block text-xs font-mono uppercase text-muted">Electronic Signature Image</label>
+              <input id="cv-sign-upload" type="file" accept="image/*" class="text-xs" />
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="text-xs font-mono uppercase text-muted">Experience Entries</div>
+            ${(cv.experience || []).map((exp, i) => `
+              <div class="border border-hairline p-4 bg-stone/50 space-y-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input data-cvexp="${i}:title" value="${esc(exp.title)}" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-cvexp="${i}:company" value="${esc(exp.company)}" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                  <input data-cvexp="${i}:period" value="${esc(exp.period)}" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                </div>
+                <textarea data-cvexp="${i}:bullets" rows="2" class="w-full border border-hairline bg-white px-3 py-2 text-sm">${esc(exp.bullets)}</textarea>
+              </div>
+            `).join('')}
+          </div>
+          <button id="save-cv-btn" type="button" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save CV</button>
+        </div>
+      `;
+      document.getElementById('cv-sign-upload').addEventListener('change', e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        handleFileUpload(f, 'cv-sign', url => {
+          state.cv.signatureImage = url;
+          saveState('Signature image updated');
+        });
+      });
+      document.getElementById('cv-pdf-upload').addEventListener('change', e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        handleFileUpload(f, 'cv-pdf', url => {
+          state.cv.uploadedCvUrl = url;
+          state.cv.uploadedCvName = f.name;
+          saveState('CV PDF uploaded');
+        });
+      });
+      document.getElementById('save-cv-btn').addEventListener('click', () => {
+        state.cv.summary = document.getElementById('cv-summary-input').value;
+        panel.querySelectorAll('[data-cvexp]').forEach(el => {
+          const [idx, field] = el.dataset.cvexp.split(':');
+          if (state.cv.experience[idx]) state.cv.experience[idx][field] = el.value;
+        });
+        saveState('CV updated');
+      });
+    }
+
+    // ==================== EVENT WIRING & PRIVATE ADMIN ACCESS ====================
+    const IS_BACKEND = window.location.protocol.startsWith('http');
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      const m = document.getElementById('mobile-menu');
+      m.classList.toggle('hidden');
+    });
+
+    function openAdminPrompt() {
+      if (isAdminUnlocked) {
+        toggleAdmin(true);
+        return;
+      }
+      const authModal = document.getElementById('auth-modal');
+      authModal.classList.remove('hidden');
+      authModal.classList.add('flex');
+      document.getElementById('auth-passcode').focus();
+    }
+
+    // 1. Secret Keyboard Shortcut: Ctrl + Shift + L (or Cmd + Shift + L)
+    window.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        openAdminPrompt();
+      }
+      if (e.key === 'Escape') {
+        ['project-modal', 'blog-modal', 'gallery-modal', 'auth-modal'].forEach(id => {
+          const m = document.getElementById(id);
+          if (m && !m.classList.contains('hidden')) {
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+          }
+        });
+      }
+    });
+
+    // 2. Secret Triple-Click on the green square next to MARCUS KAULA in the header
+    let brandClicks = 0;
+    let brandClickTimer = null;
+    const secretDot = document.getElementById('secret-brand-dot');
+    if (secretDot) {
+      secretDot.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        brandClicks++;
+        clearTimeout(brandClickTimer);
+        if (brandClicks >= 3) {
+          brandClicks = 0;
+          openAdminPrompt();
+        } else {
+          brandClickTimer = setTimeout(() => { brandClicks = 0; }, 600);
+        }
+      });
+    }
+
+    // 3. Secret URL Query Parameter: ?studio=1
+    if (new URLSearchParams(window.location.search).get('studio') === '1') {
+      window.history.replaceState({}, '', window.location.pathname);
+      setTimeout(() => openAdminPrompt(), 100);
+    }
+
+    document.getElementById('exit-admin-btn').addEventListener('click', () => toggleAdmin(false));
+    document.getElementById('print-cv-btn').addEventListener('click', () => window.print());
+
+    document.getElementById('pm-close').addEventListener('click', () => {
+      const modal = document.getElementById('project-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('pm-media-stage').innerHTML = '';
+    });
+
+    document.getElementById('bm-close').addEventListener('click', () => {
+      const modal = document.getElementById('blog-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    document.getElementById('gm-close').addEventListener('click', () => {
+      const modal = document.getElementById('gallery-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    document.getElementById('auth-close').addEventListener('click', () => {
+      const modal = document.getElementById('auth-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    document.getElementById('auth-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const val = document.getElementById('auth-passcode').value.trim();
+      let valid = false;
+
+      if (IS_BACKEND) {
+        try {
+          const res = await fetch('/api/auth/verify', {
+            method: 'POST',
+            headers: { 'X-Admin-Passcode': val }
+          });
+          valid = res.ok;
+        } catch (err) {
+          valid = val === (state.profile.passcode || 'kaula12');
+        }
+      } else {
+        valid = val === (state.profile.passcode || 'kaula12');
+      }
+
+      if (valid) {
+        sessionStorage.setItem('mk_admin_passcode', val);
+        state.profile.passcode = val;
+        isAdminUnlocked = true;
+        document.getElementById('auth-error').classList.add('hidden');
+        document.getElementById('auth-modal').classList.add('hidden');
+        document.getElementById('auth-modal').classList.remove('flex');
+        document.getElementById('auth-passcode').value = '';
+        toggleAdmin(true);
+      } else {
+        document.getElementById('auth-error').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('export-json-btn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'marcus-kaula-portfolio-data.json';
+      a.click();
+      showToast('Exported portfolio JSON');
+    });
+
+    document.getElementById('import-json-input').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          state = JSON.parse(reader.result);
+          saveState('Imported portfolio JSON');
+        } catch (err) {
+          showToast('Invalid JSON file');
+        }
+      };
+      reader.readAsText(f);
+    });
+
+    document.getElementById('reset-demo-btn').addEventListener('click', () => {
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      saveState('Reset to defaults');
+    });
+
+    renderAll();
+
+    async function syncLoadFromBackend() {
+      if (!IS_BACKEND) return;
+      try {
+        const res = await fetch('/api/portfolio');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.profile) {
+            state = {
+              ...DEFAULT_STATE,
+              ...data,
+              profile: { ...DEFAULT_STATE.profile, ...data.profile }
+            };
+            renderAll();
+          }
+        }
+      } catch (e) {}
+    }
+
+    const _origSaveState = saveState;
+    saveState = async function(msg = 'Changes saved') {
+      _origSaveState(msg);
+      if (!IS_BACKEND) return;
+      const activePasscode = sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
+      try {
+        await fetch('/api/portfolio', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Passcode': activePasscode },
+          body: JSON.stringify(state)
+        });
+      } catch (e) {}
+    };
+
+    const _origHandleFileUpload = handleFileUpload;
+    handleFileUpload = async function(file, sessionKey, onDone) {
+      if (!file) return;
+      if (IS_BACKEND) {
+        const activePasscode = sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
+        try {
+          const fd = new FormData();
+          fd.append('file', file);
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'X-Admin-Passcode': activePasscode },
+            body: fd
+          });
+          if (res.ok) {
+            const out = await res.json();
+            onDone(out.url);
+            return;
+          }
+        } catch (e) {}
+      }
+      _origHandleFileUpload(file, sessionKey, onDone);
+    };
+
+    syncLoadFromBackend();
+
+  </script>
+</body>
+</html>
