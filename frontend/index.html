@@ -63,8 +63,13 @@
       border-color: var(--border-hairline);
     }
     @media print {
-      header, footer, #admin-view, .no-print { display: none !important; }
-      #cv-section { padding: 0 !important; border: none !important; }
+      header, footer, #admin-view, #toast, .no-print,
+      #project-modal, #blog-modal, #gallery-modal, #auth-modal, #cv-preview-modal,
+      #public-view > section:not(#cv) {
+        display: none !important;
+      }
+      #cv { padding: 0 !important; border: none !important; }
+      #cv-section { padding: 0 !important; border: none !important; max-width: 100% !important; }
       body { background: #ffffff !important; color: #000000 !important; }
     }
   </style>
@@ -255,8 +260,11 @@
             <p class="text-sm text-muted mt-1" id="cv-title-line">Founder &amp; AI Automation Engineer · Data Scientist · Full-Stack Developer</p>
           </div>
           <div class="flex flex-wrap gap-3 no-print">
-            <button id="print-cv-btn" type="button" class="px-4 py-2.5 bg-obsidian text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald swiss-transition focus-ring">
-              Print / Save PDF
+            <button id="review-cv-btn" type="button" class="hidden px-4 py-2.5 bg-obsidian text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald swiss-transition focus-ring">
+              Review CV
+            </button>
+            <button id="print-cv-btn" type="button" class="px-4 py-2.5 border border-ink text-ink text-xs font-mono uppercase tracking-wider hover:bg-stone swiss-transition focus-ring">
+              Print CV
             </button>
             <a id="download-uploaded-cv-btn" href="#" download class="hidden px-4 py-2.5 border border-ink text-ink text-xs font-mono uppercase tracking-wider hover:bg-stone swiss-transition focus-ring">
               Download Uploaded CV
@@ -427,6 +435,36 @@
       <div class="p-6 space-y-2">
         <h3 id="gm-title" class="text-xl font-semibold text-ink"></h3>
         <p id="gm-caption" class="text-sm text-muted leading-relaxed whitespace-pre-line"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Uploaded CV Review Modal -->
+  <div id="cv-preview-modal" class="fixed inset-0 z-50 hidden bg-obsidian/85 backdrop-blur-sm items-center justify-center p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="cvm-title">
+    <div class="bg-white border border-hairline max-w-5xl w-full h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 border-b border-hairline bg-stone">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="text-xs font-mono uppercase tracking-widest text-emerald shrink-0">CV Preview</span>
+          <span class="text-muted">·</span>
+          <h3 id="cvm-title" class="text-xs font-mono text-ink truncate">Marcus_Kaula_CV.pdf</h3>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="cvm-print" type="button" class="px-3 py-1.5 bg-obsidian text-white text-[11px] font-mono uppercase tracking-wider hover:bg-emerald swiss-transition focus-ring">
+            Print CV
+          </button>
+          <a id="cvm-download" href="#" download class="px-3 py-1.5 border border-ink text-ink text-[11px] font-mono uppercase tracking-wider hover:bg-white swiss-transition focus-ring">
+            Download
+          </a>
+          <a id="cvm-open-tab" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 border border-hairline text-muted text-[11px] font-mono uppercase tracking-wider hover:border-ink hover:text-ink swiss-transition focus-ring">
+            New Tab ↗
+          </a>
+          <button id="cvm-close" type="button" class="p-1.5 text-muted hover:text-ink focus-ring" aria-label="Close CV preview">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="flex-1 bg-stone relative overflow-hidden">
+        <iframe id="cvm-frame" src="" title="Uploaded CV Document Preview" class="w-full h-full border-0 bg-white"></iframe>
       </div>
     </div>
   </div>
@@ -1115,14 +1153,17 @@
 
     function renderCV() {
       const cv = state.cv;
+      const reviewBtn = document.getElementById('review-cv-btn');
       const dlBtn = document.getElementById('download-uploaded-cv-btn');
       const cvUrl = resolveMedia(cv.uploadedCvUrl, 'cv-pdf');
       if (cvUrl) {
         dlBtn.href = cvUrl;
         dlBtn.download = cv.uploadedCvName || 'Marcus_Kaula_CV.pdf';
         dlBtn.classList.remove('hidden');
+        if (reviewBtn) reviewBtn.classList.remove('hidden');
       } else {
         dlBtn.classList.add('hidden');
+        if (reviewBtn) reviewBtn.classList.add('hidden');
       }
 
       document.getElementById('cv-content').innerHTML = `
@@ -2136,11 +2177,15 @@
         openAdminPrompt();
       }
       if (e.key === 'Escape') {
-        ['project-modal', 'blog-modal', 'gallery-modal', 'auth-modal'].forEach(id => {
+        ['project-modal', 'blog-modal', 'gallery-modal', 'auth-modal', 'cv-preview-modal'].forEach(id => {
           const m = document.getElementById(id);
           if (m && !m.classList.contains('hidden')) {
             m.classList.add('hidden');
             m.classList.remove('flex');
+            if (id === 'cv-preview-modal') {
+              const frame = document.getElementById('cvm-frame');
+              if (frame) frame.src = '';
+            }
           }
         });
       }
@@ -2171,8 +2216,98 @@
       setTimeout(() => openAdminPrompt(), 100);
     }
 
+    function openCvPreviewModal() {
+      const cv = state.cv;
+      const cvUrl = resolveMedia(cv.uploadedCvUrl, 'cv-pdf');
+      if (!cvUrl) {
+        showToast('No uploaded CV file found yet.', true);
+        return;
+      }
+      const fileName = cv.uploadedCvName || 'Marcus_Kaula_CV.pdf';
+      document.getElementById('cvm-title').textContent = fileName;
+      const dlLink = document.getElementById('cvm-download');
+      dlLink.href = cvUrl;
+      dlLink.download = fileName;
+      document.getElementById('cvm-open-tab').href = cvUrl;
+      const frame = document.getElementById('cvm-frame');
+      frame.src = cvUrl.includes('#') ? cvUrl : `${cvUrl}#toolbar=1&navpanes=0&view=FitH`;
+      const modal = document.getElementById('cv-preview-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCvPreviewModal() {
+      const modal = document.getElementById('cv-preview-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      const frame = document.getElementById('cvm-frame');
+      if (frame) frame.src = '';
+    }
+
+    async function printUploadedOrPageCV() {
+      const cvUrl = resolveMedia(state.cv.uploadedCvUrl, 'cv-pdf');
+      if (!cvUrl) {
+        window.print();
+        return;
+      }
+
+      let printObjectUrl = null;
+      try {
+        showToast('Preparing uploaded CV for printing...');
+        let frameSrc = cvUrl;
+        if (!cvUrl.startsWith('blob:') && !cvUrl.startsWith('data:')) {
+          const res = await fetch(cvUrl);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const blob = await res.blob();
+          const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+          printObjectUrl = URL.createObjectURL(pdfBlob);
+          frameSrc = printObjectUrl;
+        }
+
+        const existing = document.getElementById('cv-print-iframe');
+        if (existing) existing.remove();
+
+        const iframe = document.createElement('iframe');
+        iframe.id = 'cv-print-iframe';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        iframe.src = frameSrc;
+
+        iframe.onload = () => {
+          setTimeout(() => {
+            try {
+              iframe.contentWindow.focus();
+              iframe.contentWindow.print();
+            } catch (err) {
+              window.open(cvUrl, '_blank', 'noopener,noreferrer');
+            }
+            setTimeout(() => {
+              iframe.remove();
+              if (printObjectUrl) URL.revokeObjectURL(printObjectUrl);
+            }, 60000);
+          }, 250);
+        };
+
+        document.body.appendChild(iframe);
+      } catch (err) {
+        if (printObjectUrl) URL.revokeObjectURL(printObjectUrl);
+        window.open(cvUrl, '_blank', 'noopener,noreferrer');
+        showToast('Opened CV PDF in a new tab for printing.');
+      }
+    }
+
     document.getElementById('exit-admin-btn').addEventListener('click', () => toggleAdmin(false));
-    document.getElementById('print-cv-btn').addEventListener('click', () => window.print());
+    document.getElementById('review-cv-btn').addEventListener('click', openCvPreviewModal);
+    document.getElementById('print-cv-btn').addEventListener('click', printUploadedOrPageCV);
+    document.getElementById('cvm-print').addEventListener('click', printUploadedOrPageCV);
+    document.getElementById('cvm-close').addEventListener('click', closeCvPreviewModal);
+    document.getElementById('cv-preview-modal').addEventListener('click', e => {
+      if (e.target.id === 'cv-preview-modal') closeCvPreviewModal();
+    });
 
     document.getElementById('pm-close').addEventListener('click', () => {
       const modal = document.getElementById('project-modal');
