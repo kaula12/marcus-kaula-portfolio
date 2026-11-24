@@ -72,8 +72,8 @@
 <body class="bg-white text-ink selection:bg-emerald selection:text-white">
 
   <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 bg-obsidian text-white px-5 py-3.5 text-sm font-medium border border-white/15 shadow-2xl swiss-transition" role="status" aria-live="polite">
-    <span class="w-2 h-2 rounded-full bg-emerald inline-block"></span>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 bg-obsidian text-white px-5 py-3.5 text-sm font-medium border border-white/15 shadow-2xl swiss-transition max-w-md" role="status" aria-live="polite">
+    <span id="toast-dot" class="w-2 h-2 rounded-full bg-emerald inline-block shrink-0"></span>
     <span id="toast-msg">Saved</span>
   </div>
 
@@ -317,6 +317,9 @@
           <button id="exit-admin-btn" type="button" class="px-4 py-2 text-xs font-mono uppercase bg-emerald text-white hover:bg-emerald-dark swiss-transition">Back to Site</button>
         </div>
       </div>
+
+      <!-- Live Backend Storage Status -->
+      <div id="admin-backend-status" class="hidden border-x border-b border-hairline px-6 py-3 text-xs font-mono"></div>
 
       <!-- Admin Tabs -->
       <div class="bg-white border-x border-b border-hairline px-4 sm:px-6 flex flex-wrap gap-1 overflow-x-auto" id="admin-tabs" role="tablist"></div>
@@ -869,16 +872,21 @@
       if (msg) showToast(msg);
     }
 
-    function showToast(msg) {
+    function showToast(msg, isError = false) {
       const toast = document.getElementById('toast');
+      const dot = document.getElementById('toast-dot');
       document.getElementById('toast-msg').textContent = msg;
-      toast.classList.remove('hidden');
-      toast.classList.add('flex');
+      toast.classList.remove('hidden', 'border-white/15', 'border-red-500/70');
+      toast.classList.add('flex', isError ? 'border-red-500/70' : 'border-white/15');
+      if (dot) {
+        dot.classList.remove('bg-emerald', 'bg-red-500');
+        dot.classList.add(isError ? 'bg-red-500' : 'bg-emerald');
+      }
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => {
         toast.classList.add('hidden');
         toast.classList.remove('flex');
-      }, 2800);
+      }, isError ? 5500 : 2800);
     }
 
     function esc(str) {
@@ -1362,6 +1370,41 @@
     }
 
     // ==================== ADMIN STUDIO ====================
+    let activeUploads = 0;
+
+    async function checkBackendHealth() {
+      const banner = document.getElementById('admin-backend-status');
+      if (!banner || !IS_BACKEND) return;
+      try {
+        const res = await fetch('/api/health', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const info = await res.json();
+        banner.classList.remove('hidden', 'bg-emerald-tint', 'text-emerald-dark', 'bg-red-50', 'text-red-800', 'bg-stone', 'text-muted');
+        if (info.supabase_connected) {
+          banner.classList.add('bg-emerald-tint', 'text-emerald-dark');
+          banner.textContent = `CONNECTED · Supabase (${info.bucket || info.storage_bucket}) · Direct media uploads up to 50 MB enabled.`;
+        } else if (info.is_vercel) {
+          banner.classList.add('bg-red-50', 'text-red-800');
+          banner.textContent = `VERCEL WARNING · Supabase is NOT connected (${info.supabase_error || 'check SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY in Vercel Environment Variables'}). Saves and uploads will fail until configured.`;
+        } else {
+          banner.classList.add('bg-stone', 'text-muted');
+          banner.textContent = `LOCAL MODE · Using local SQLite & /uploads (${info.supabase_error || 'Supabase not configured'}).`;
+        }
+      } catch (err) {
+        banner.classList.remove('hidden', 'bg-emerald-tint', 'text-emerald-dark', 'bg-stone', 'text-muted');
+        banner.classList.add('bg-red-50', 'text-red-800');
+        banner.textContent = `BACKEND WARNING · Could not reach /api/health (${err.message || 'network error'}).`;
+      }
+    }
+
+    function guardActiveUploads() {
+      if (activeUploads > 0) {
+        showToast('Please wait for the active file upload to finish before saving.', true);
+        return false;
+      }
+      return true;
+    }
+
     function toggleAdmin(force) {
       if (typeof force === 'boolean') isAdminView = force;
       else isAdminView = !isAdminView;
@@ -1378,7 +1421,13 @@
       document.getElementById('public-view').classList.toggle('hidden', isAdminView);
       document.getElementById('admin-view').classList.toggle('hidden', !isAdminView);
       const btnLbl = document.getElementById('admin-btn-label'); if (btnLbl) btnLbl.textContent = isAdminView ? 'View Live Site' : 'Admin Studio';
-      if (isAdminView) renderAdminPanel();
+      if (isAdminView) {
+        renderAdminPanel();
+        checkBackendHealth();
+      } else {
+        renderAll();
+        if (IS_BACKEND && activeUploads === 0) syncLoadFromBackend();
+      }
     }
 
     function handleFileUpload(file, sessionKey, onDone) {
@@ -1427,8 +1476,20 @@
       else if (activeAdminTab === 'gallery') renderAdminGallery(panel);
     }
 
+    function syncProfileFormToState(panel, skipHeroImage = false) {
+      const form = panel.querySelector('#admin-profile-form');
+      if (!form) return;
+      const fd = new FormData(form);
+      for (const [k, v] of fd.entries()) {
+        if (k === 'passcode') continue;
+        if (skipHeroImage && k === 'heroImage') continue;
+        state.profile[k] = v;
+      }
+    }
+
     function renderAdminProfile(panel) {
       const p = state.profile;
+      const heroPreview = resolveMedia(p.heroImage, 'hero');
       panel.innerHTML = `
         <form id="admin-profile-form" class="space-y-6 max-w-3xl">
           <h2 class="text-xl font-semibold">Profile, Hero &amp; Placeholder Image</h2>
@@ -1440,7 +1501,7 @@
             <div><label class="block text-xs font-mono uppercase text-muted mb-1">LinkedIn URL</label><input name="linkedinUrl" value="${esc(p.linkedinUrl || 'https://www.linkedin.com/in/marcus-kaula-268b1340b')}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
             <div><label class="block text-xs font-mono uppercase text-muted mb-1">Contact Email</label><input name="email" value="${esc(p.email)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
             <div><label class="block text-xs font-mono uppercase text-muted mb-1">Languages</label><input name="languages" value="${esc(p.languages)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
-            <div><label class="block text-xs font-mono uppercase text-muted mb-1">Admin Passcode (Leave blank to keep current)</label><input name="passcode" type="password" value="${esc(sessionStorage.getItem('mk_admin_passcode') || '')}" placeholder="••••••••" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
+            <div><label class="block text-xs font-mono uppercase text-muted mb-1">New Admin Passcode (Leave blank to keep current)</label><input name="passcode" type="password" value="" autocomplete="new-password" placeholder="Leave blank to keep current" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
           </div>
           <div><label class="block text-xs font-mono uppercase text-muted mb-1">Hero Headline</label><input name="headline" value="${esc(p.headline)}" class="w-full border border-hairline px-3 py-2 text-sm" /></div>
           <div><label class="block text-xs font-mono uppercase text-muted mb-1">Hero Subheadline</label><textarea name="subheadline" rows="2" class="w-full border border-hairline px-3 py-2 text-sm">${esc(p.subheadline)}</textarea></div>
@@ -1449,33 +1510,81 @@
           <div class="p-4 bg-stone border border-hairline space-y-3">
             <div class="text-xs font-mono uppercase text-muted">Hero Image (Replace Placeholder)</div>
             <div class="flex flex-wrap items-center gap-4">
+              ${heroPreview ? `<img src="${esc(heroPreview)}" alt="Hero preview" class="w-20 h-14 object-cover border border-hairline bg-obsidian shrink-0" />` : ''}
               <input id="hero-img-upload" type="file" accept="image/*" class="text-xs" />
-              <input name="heroImage" value="${esc(p.heroImage)}" placeholder="Or paste image URL" class="flex-1 border border-hairline px-3 py-2 text-sm bg-white" />
+              <input name="heroImage" value="${esc(p.heroImage)}" placeholder="Or paste image URL" class="flex-1 min-w-[200px] border border-hairline px-3 py-2 text-sm bg-white" />
             </div>
           </div>
           <button type="submit" class="px-6 py-2.5 bg-obsidian text-white text-sm font-medium hover:bg-emerald swiss-transition">Save Profile</button>
         </form>
       `;
       document.getElementById('hero-img-upload').addEventListener('change', e => {
-        handleFileUpload(e.target.files[0], 'hero', url => {
+        const inputEl = e.target;
+        handleFileUpload(inputEl.files[0], 'hero', async url => {
+          syncProfileFormToState(panel, true);
           state.profile.heroImage = url;
-          saveState('Hero image updated');
-        });
+          const heroInput = panel.querySelector('[name="heroImage"]');
+          if (heroInput) heroInput.value = url;
+          await saveState('Hero image updated');
+        }, inputEl);
       });
-      document.getElementById('admin-profile-form').addEventListener('submit', e => {
+      document.getElementById('admin-profile-form').addEventListener('submit', async e => {
         e.preventDefault();
+        if (!guardActiveUploads()) return;
         const fd = new FormData(e.target);
+        const currentPasscode = sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
+        let newPasscode = '';
         for (const [k, v] of fd.entries()) {
           if (k === 'passcode') {
-            if (String(v).trim()) {
-              state.profile.passcode = String(v).trim();
-              sessionStorage.setItem('mk_admin_passcode', String(v).trim());
-            }
+            newPasscode = String(v).trim();
           } else {
             state.profile[k] = v;
           }
         }
-        saveState('Profile updated');
+        if (newPasscode) {
+          state.profile.passcode = newPasscode;
+        } else if (IS_BACKEND) {
+          state.profile.passcode = '';
+        }
+        const ok = await saveState('Profile updated', currentPasscode);
+        if (ok && newPasscode) {
+          sessionStorage.setItem('mk_admin_passcode', newPasscode);
+        }
+        if (IS_BACKEND) {
+          state.profile.passcode = '';
+        }
+      });
+    }
+
+    function syncProjectsFormToState(panel, skipKeys = {}) {
+      panel.querySelectorAll('[data-pf]').forEach(el => {
+        if (skipKeys[el.dataset.pf]) return;
+        const [id, field] = el.dataset.pf.split(':');
+        const proj = state.projects.find(x => x.id === id);
+        if (proj) proj[field] = el.value;
+      });
+      panel.querySelectorAll('[data-pstack]').forEach(el => {
+        const proj = state.projects.find(x => x.id === el.dataset.pstack);
+        if (proj) proj.stack = el.value.split(',').map(s => s.trim()).filter(Boolean);
+      });
+      panel.querySelectorAll('[data-pextra]').forEach(el => {
+        const proj = state.projects.find(x => x.id === el.dataset.pextra);
+        if (proj) {
+          proj.extraLinks = el.value
+            .split('\n')
+            .map(line => line.trim())
+            .filter(Boolean)
+            .map(line => {
+              const parts = line.split('|');
+              if (parts.length >= 2) {
+                return { label: parts[0].trim(), url: parts.slice(1).join('|').trim() };
+              }
+              return { label: 'View Work', url: line };
+            })
+            .filter(l => l.url);
+          proj.githubUrl = (proj.githubUrl || '').trim();
+          proj.liveUrl = (proj.liveUrl || '').trim();
+        }
       });
     }
 
@@ -1485,7 +1594,7 @@
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 class="text-xl font-semibold">Projects, Images &amp; Video Uploads</h2>
-              <p class="text-sm text-muted">Upload MP4/WebM demo videos or cover images, edit descriptions, or add new projects.</p>
+              <p class="text-sm text-muted">Upload MP4/WebM demo videos (up to 50 MB via Supabase) or cover images, edit descriptions, or add new projects.</p>
             </div>
             <button id="add-project-btn" type="button" class="px-4 py-2 bg-emerald text-white text-xs font-mono uppercase tracking-wider hover:bg-emerald-dark">+ Add Project</button>
           </div>
@@ -1532,6 +1641,8 @@
       `;
 
       document.getElementById('add-project-btn').addEventListener('click', () => {
+        if (!guardActiveUploads()) return;
+        syncProjectsFormToState(panel);
         state.projects.unshift({
           id: 'proj-' + Date.now(),
           title: 'New Project',
@@ -1552,6 +1663,8 @@
 
       panel.querySelectorAll('[data-del-proj]').forEach(btn => {
         btn.addEventListener('click', () => {
+          if (!guardActiveUploads()) return;
+          syncProjectsFormToState(panel);
           state.projects = state.projects.filter(x => x.id !== btn.dataset.delProj);
           saveState('Project deleted');
         });
@@ -1560,55 +1673,48 @@
       panel.querySelectorAll('[data-pimg-file]').forEach(inp => {
         inp.addEventListener('change', e => {
           const id = inp.dataset.pimgFile;
-          handleFileUpload(e.target.files[0], 'proj-img-' + id, url => {
+          handleFileUpload(e.target.files[0], 'proj-img-' + id, async url => {
+            syncProjectsFormToState(panel, { [id + ':image']: true });
             const proj = state.projects.find(x => x.id === id);
             if (proj) proj.image = url;
-            saveState('Project image uploaded');
-          });
+            const urlInput = panel.querySelector(`[data-pf="${id}:image"]`);
+            if (urlInput) urlInput.value = url;
+            await saveState('Project image uploaded');
+          }, inp);
         });
       });
 
       panel.querySelectorAll('[data-pvid-file]').forEach(inp => {
         inp.addEventListener('change', e => {
           const id = inp.dataset.pvidFile;
-          handleFileUpload(e.target.files[0], 'proj-vid-' + id, url => {
+          handleFileUpload(e.target.files[0], 'proj-vid-' + id, async url => {
+            syncProjectsFormToState(panel, { [id + ':videoUrl']: true });
             const proj = state.projects.find(x => x.id === id);
             if (proj) proj.videoUrl = url;
-            saveState('Project video attached');
-          });
+            const urlInput = panel.querySelector(`[data-pf="${id}:videoUrl"]`);
+            if (urlInput) urlInput.value = url;
+            await saveState('Project video attached');
+          }, inp);
         });
       });
 
       document.getElementById('save-projects-btn').addEventListener('click', () => {
-        panel.querySelectorAll('[data-pf]').forEach(el => {
-          const [id, field] = el.dataset.pf.split(':');
-          const proj = state.projects.find(x => x.id === id);
-          if (proj) proj[field] = el.value;
-        });
-        panel.querySelectorAll('[data-pstack]').forEach(el => {
-          const proj = state.projects.find(x => x.id === el.dataset.pstack);
-          if (proj) proj.stack = el.value.split(',').map(s => s.trim()).filter(Boolean);
-        });
-        panel.querySelectorAll('[data-pextra]').forEach(el => {
-          const proj = state.projects.find(x => x.id === el.dataset.pextra);
-          if (proj) {
-            proj.extraLinks = el.value
-              .split('\n')
-              .map(line => line.trim())
-              .filter(Boolean)
-              .map(line => {
-                const parts = line.split('|');
-                if (parts.length >= 2) {
-                  return { label: parts[0].trim(), url: parts.slice(1).join('|').trim() };
-                }
-                return { label: 'View Work', url: line };
-              })
-              .filter(l => l.url);
-            proj.githubUrl = (proj.githubUrl || '').trim();
-            proj.liveUrl = (proj.liveUrl || '').trim();
-          }
-        });
+        if (!guardActiveUploads()) return;
+        syncProjectsFormToState(panel);
         saveState('All projects saved');
+      });
+    }
+
+    function syncBlogFormToState(panel, skipKeys = {}) {
+      panel.querySelectorAll('[data-bf]').forEach(el => {
+        if (skipKeys[el.dataset.bf]) return;
+        const [id, field] = el.dataset.bf.split(':');
+        const p = state.posts.find(x => x.id === id);
+        if (p) p[field] = el.value;
+      });
+      panel.querySelectorAll('[data-bpub]').forEach(el => {
+        const p = state.posts.find(x => x.id === el.dataset.bpub);
+        if (p) p.published = el.checked;
       });
     }
 
@@ -1641,6 +1747,7 @@
                 <div><label class="block text-[11px] font-mono uppercase text-muted mb-1">Article Body</label><textarea data-bf="${esc(post.id)}:body" rows="4" class="w-full border border-hairline bg-white px-3 py-2 text-sm">${esc(post.body)}</textarea></div>
                 <div class="flex flex-wrap items-center gap-4">
                   <input type="file" accept="image/*" data-bimg-file="${esc(post.id)}" class="text-xs" />
+                  <input data-bf="${esc(post.id)}:coverImage" value="${esc(post.coverImage || '')}" placeholder="Cover image URL" class="flex-1 min-w-[200px] border border-hairline bg-white px-3 py-1.5 text-xs" />
                   <input data-bf="${esc(post.id)}:readTime" value="${esc(post.readTime)}" placeholder="5 min read" class="border border-hairline bg-white px-3 py-1.5 text-xs" />
                 </div>
               </div>
@@ -1651,6 +1758,8 @@
       `;
 
       document.getElementById('add-post-btn').addEventListener('click', () => {
+        if (!guardActiveUploads()) return;
+        syncBlogFormToState(panel);
         state.posts.unshift({
           id: 'post-' + Date.now(),
           title: 'Untitled Engineering Note',
@@ -1667,6 +1776,8 @@
 
       panel.querySelectorAll('[data-del-post]').forEach(btn => {
         btn.addEventListener('click', () => {
+          if (!guardActiveUploads()) return;
+          syncBlogFormToState(panel);
           state.posts = state.posts.filter(x => x.id !== btn.dataset.delPost);
           saveState('Post deleted');
         });
@@ -1675,25 +1786,34 @@
       panel.querySelectorAll('[data-bimg-file]').forEach(inp => {
         inp.addEventListener('change', e => {
           const id = inp.dataset.bimgFile;
-          handleFileUpload(e.target.files[0], 'post-img-' + id, url => {
+          handleFileUpload(e.target.files[0], 'post-img-' + id, async url => {
+            syncBlogFormToState(panel, { [id + ':coverImage']: true });
             const p = state.posts.find(x => x.id === id);
             if (p) p.coverImage = url;
-            saveState('Blog cover image uploaded');
-          });
+            const urlInput = panel.querySelector(`[data-bf="${id}:coverImage"]`);
+            if (urlInput) urlInput.value = url;
+            await saveState('Blog cover image uploaded');
+          }, inp);
         });
       });
 
       document.getElementById('save-posts-btn').addEventListener('click', () => {
-        panel.querySelectorAll('[data-bf]').forEach(el => {
-          const [id, field] = el.dataset.bf.split(':');
-          const p = state.posts.find(x => x.id === id);
-          if (p) p[field] = el.value;
-        });
-        panel.querySelectorAll('[data-bpub]').forEach(el => {
-          const p = state.posts.find(x => x.id === el.dataset.bpub);
-          if (p) p.published = el.checked;
-        });
+        if (!guardActiveUploads()) return;
+        syncBlogFormToState(panel);
         saveState('Blog posts saved');
+      });
+    }
+
+    function syncGalleryFormToState(panel, skipKeys = {}) {
+      panel.querySelectorAll('[data-gf]').forEach(el => {
+        if (skipKeys[el.dataset.gf]) return;
+        const [id, field] = el.dataset.gf.split(':');
+        const g = state.gallery.find(x => x.id === id);
+        if (g) g[field] = el.value;
+      });
+      panel.querySelectorAll('[data-gpub]').forEach(el => {
+        const g = state.gallery.find(x => x.id === el.dataset.gpub);
+        if (g) g.published = el.checked;
       });
     }
 
@@ -1752,6 +1872,8 @@
       `;
 
       document.getElementById('add-gallery-btn').addEventListener('click', () => {
+        if (!guardActiveUploads()) return;
+        syncGalleryFormToState(panel);
         state.gallery.unshift({
           id: 'gal-' + Date.now(),
           title: 'New Photo',
@@ -1767,6 +1889,8 @@
 
       panel.querySelectorAll('[data-del-gal]').forEach(btn => {
         btn.addEventListener('click', () => {
+          if (!guardActiveUploads()) return;
+          syncGalleryFormToState(panel);
           state.gallery = state.gallery.filter(x => x.id !== btn.dataset.delGal);
           saveState('Photo deleted');
         });
@@ -1775,25 +1899,29 @@
       panel.querySelectorAll('[data-gimg-file]').forEach(inp => {
         inp.addEventListener('change', e => {
           const id = inp.dataset.gimgFile;
-          handleFileUpload(e.target.files[0], 'gal-img-' + id, url => {
+          handleFileUpload(e.target.files[0], 'gal-img-' + id, async url => {
+            syncGalleryFormToState(panel, { [id + ':image']: true });
             const g = state.gallery.find(x => x.id === id);
             if (g) g.image = url;
-            saveState('Gallery photo uploaded');
-          });
+            const urlInput = panel.querySelector(`[data-gf="${id}:image"]`);
+            if (urlInput) urlInput.value = url;
+            await saveState('Gallery photo uploaded');
+          }, inp);
         });
       });
 
       document.getElementById('save-gallery-btn').addEventListener('click', () => {
-        panel.querySelectorAll('[data-gf]').forEach(el => {
-          const [id, field] = el.dataset.gf.split(':');
-          const g = state.gallery.find(x => x.id === id);
-          if (g) g[field] = el.value;
-        });
-        panel.querySelectorAll('[data-gpub]').forEach(el => {
-          const g = state.gallery.find(x => x.id === el.dataset.gpub);
-          if (g) g.published = el.checked;
-        });
+        if (!guardActiveUploads()) return;
+        syncGalleryFormToState(panel);
         saveState('Gallery saved');
+      });
+    }
+
+    function syncJourneyFormToState(panel) {
+      panel.querySelectorAll('[data-jf]').forEach(el => {
+        const [id, f] = el.dataset.jf.split(':');
+        const item = state.journey.find(x => x.id === id);
+        if (item) item[f] = el.value;
       });
     }
 
@@ -1821,20 +1949,27 @@
         </div>
       `;
       document.getElementById('add-journey-btn').addEventListener('click', () => {
+        syncJourneyFormToState(panel);
         state.journey.unshift({ id: 'j-' + Date.now(), period: '2026', role: 'New Role', org: 'Organization', description: 'Milestone details...' });
         saveState('Milestone added');
       });
       panel.querySelectorAll('[data-del-j]').forEach(b => b.addEventListener('click', () => {
+        syncJourneyFormToState(panel);
         state.journey = state.journey.filter(x => x.id !== b.dataset.delJ);
         saveState('Milestone removed');
       }));
       document.getElementById('save-journey-btn').addEventListener('click', () => {
-        panel.querySelectorAll('[data-jf]').forEach(el => {
-          const [id, f] = el.dataset.jf.split(':');
-          const item = state.journey.find(x => x.id === id);
-          if (item) item[f] = el.value;
-        });
+        syncJourneyFormToState(panel);
         saveState('Journey saved');
+      });
+    }
+
+    function syncCertificatesFormToState(panel, skipKeys = {}) {
+      panel.querySelectorAll('[data-cf]').forEach(el => {
+        if (skipKeys[el.dataset.cf]) return;
+        const [id, f] = el.dataset.cf.split(':');
+        const c = state.certificates.find(x => x.id === id);
+        if (c) c[f] = el.value;
       });
     }
 
@@ -1854,10 +1989,13 @@
                   <input data-cf="${esc(c.id)}:issuer" value="${esc(c.issuer)}" placeholder="Issuer" class="border border-hairline bg-white px-3 py-2 text-sm" />
                   <input data-cf="${esc(c.id)}:date" value="${esc(c.date)}" placeholder="Date" class="border border-hairline bg-white px-3 py-2 text-sm" />
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input data-cf="${esc(c.id)}:credentialId" value="${esc(c.credentialId)}" placeholder="Credential ID" class="border border-hairline bg-white px-3 py-2 text-sm" />
                   <input data-cf="${esc(c.id)}:verifyUrl" value="${esc(c.verifyUrl)}" placeholder="Verification URL" class="border border-hairline bg-white px-3 py-2 text-sm" />
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
                   <input type="file" accept="image/*" data-cimg-file="${esc(c.id)}" class="text-xs" />
+                  <input data-cf="${esc(c.id)}:image" value="${esc(c.image || '')}" placeholder="Certificate image URL" class="flex-1 min-w-[200px] border border-hairline bg-white px-3 py-1.5 text-xs" />
                 </div>
               </div>
             `).join('')}
@@ -1866,35 +2004,49 @@
         </div>
       `;
       document.getElementById('add-cert-btn').addEventListener('click', () => {
+        if (!guardActiveUploads()) return;
+        syncCertificatesFormToState(panel);
         state.certificates.unshift({ id: 'cert-' + Date.now(), title: 'New Certificate', issuer: 'Issuer', date: '2026', credentialId: '', verifyUrl: '', image: '' });
         saveState('Certificate added');
       });
       panel.querySelectorAll('[data-del-c]').forEach(b => b.addEventListener('click', () => {
+        if (!guardActiveUploads()) return;
+        syncCertificatesFormToState(panel);
         state.certificates = state.certificates.filter(x => x.id !== b.dataset.delC);
         saveState('Certificate removed');
       }));
       panel.querySelectorAll('[data-cimg-file]').forEach(inp => {
         inp.addEventListener('change', e => {
           const id = inp.dataset.cimgFile;
-          handleFileUpload(e.target.files[0], 'cert-img-' + id, url => {
+          handleFileUpload(e.target.files[0], 'cert-img-' + id, async url => {
+            syncCertificatesFormToState(panel, { [id + ':image']: true });
             const c = state.certificates.find(x => x.id === id);
             if (c) c.image = url;
-            saveState('Certificate image uploaded');
-          });
+            const urlInput = panel.querySelector(`[data-cf="${id}:image"]`);
+            if (urlInput) urlInput.value = url;
+            await saveState('Certificate image uploaded');
+          }, inp);
         });
       });
       document.getElementById('save-certs-btn').addEventListener('click', () => {
-        panel.querySelectorAll('[data-cf]').forEach(el => {
-          const [id, f] = el.dataset.cf.split(':');
-          const c = state.certificates.find(x => x.id === id);
-          if (c) c[f] = el.value;
-        });
+        if (!guardActiveUploads()) return;
+        syncCertificatesFormToState(panel);
         saveState('Certificates saved');
+      });
+    }
+
+    function syncCVFormToState(panel) {
+      const sumEl = document.getElementById('cv-summary-input');
+      if (sumEl) state.cv.summary = sumEl.value;
+      panel.querySelectorAll('[data-cvexp]').forEach(el => {
+        const [idx, field] = el.dataset.cvexp.split(':');
+        if (state.cv.experience[idx]) state.cv.experience[idx][field] = el.value;
       });
     }
 
     function renderAdminCV(panel) {
       const cv = state.cv;
+      const signPreview = resolveMedia(cv.signatureImage, 'cv-sign');
       panel.innerHTML = `
         <div class="space-y-6 max-w-4xl">
           <h2 class="text-xl font-semibold">CV / Resume Editor</h2>
@@ -1906,10 +2058,12 @@
             <div class="p-4 bg-stone border border-hairline space-y-2">
               <label class="block text-xs font-mono uppercase text-muted">Upload Custom CV PDF</label>
               <input id="cv-pdf-upload" type="file" accept="application/pdf" class="text-xs" />
+              ${cv.uploadedCvUrl ? `<div class="text-[11px] font-mono text-emerald truncate">Attached: ${esc(cv.uploadedCvName || cv.uploadedCvUrl)}</div>` : ''}
             </div>
             <div class="p-4 bg-stone border border-hairline space-y-2">
               <label class="block text-xs font-mono uppercase text-muted">Electronic Signature Image</label>
               <input id="cv-sign-upload" type="file" accept="image/*" class="text-xs" />
+              ${signPreview ? `<img src="${esc(signPreview)}" alt="Signature preview" class="h-10 w-auto object-contain bg-white border border-hairline p-1" />` : ''}
             </div>
           </div>
           <div class="space-y-3">
@@ -1929,28 +2083,29 @@
         </div>
       `;
       document.getElementById('cv-sign-upload').addEventListener('change', e => {
-        const f = e.target.files[0];
+        const inputEl = e.target;
+        const f = inputEl.files[0];
         if (!f) return;
-        handleFileUpload(f, 'cv-sign', url => {
+        handleFileUpload(f, 'cv-sign', async url => {
+          syncCVFormToState(panel);
           state.cv.signatureImage = url;
-          saveState('Signature image updated');
-        });
+          await saveState('Signature image updated');
+        }, inputEl);
       });
       document.getElementById('cv-pdf-upload').addEventListener('change', e => {
-        const f = e.target.files[0];
+        const inputEl = e.target;
+        const f = inputEl.files[0];
         if (!f) return;
-        handleFileUpload(f, 'cv-pdf', url => {
+        handleFileUpload(f, 'cv-pdf', async url => {
+          syncCVFormToState(panel);
           state.cv.uploadedCvUrl = url;
           state.cv.uploadedCvName = f.name;
-          saveState('CV PDF uploaded');
-        });
+          await saveState('CV PDF uploaded');
+        }, inputEl);
       });
       document.getElementById('save-cv-btn').addEventListener('click', () => {
-        state.cv.summary = document.getElementById('cv-summary-input').value;
-        panel.querySelectorAll('[data-cvexp]').forEach(el => {
-          const [idx, field] = el.dataset.cvexp.split(':');
-          if (state.cv.experience[idx]) state.cv.experience[idx][field] = el.value;
-        });
+        if (!guardActiveUploads()) return;
+        syncCVFormToState(panel);
         saveState('CV updated');
       });
     }
@@ -2047,7 +2202,9 @@
     document.getElementById('auth-form').addEventListener('submit', async e => {
       e.preventDefault();
       const val = document.getElementById('auth-passcode').value.trim();
+      const errEl = document.getElementById('auth-error');
       let valid = false;
+      let errMsg = 'Invalid passcode.';
 
       if (IS_BACKEND) {
         try {
@@ -2055,9 +2212,13 @@
             method: 'POST',
             headers: { 'X-Admin-Passcode': val }
           });
-          valid = res.ok;
+          if (res.ok) {
+            valid = true;
+          } else {
+            errMsg = await extractErrorDetail(res);
+          }
         } catch (err) {
-          valid = val === (state.profile.passcode || 'kaula12');
+          errMsg = 'Could not reach backend server.';
         }
       } else {
         valid = val === (state.profile.passcode || 'kaula12');
@@ -2065,15 +2226,16 @@
 
       if (valid) {
         sessionStorage.setItem('mk_admin_passcode', val);
-        state.profile.passcode = val;
+        state.profile.passcode = IS_BACKEND ? '' : val;
         isAdminUnlocked = true;
-        document.getElementById('auth-error').classList.add('hidden');
+        errEl.classList.add('hidden');
         document.getElementById('auth-modal').classList.add('hidden');
         document.getElementById('auth-modal').classList.remove('flex');
         document.getElementById('auth-passcode').value = '';
         toggleAdmin(true);
       } else {
-        document.getElementById('auth-error').classList.remove('hidden');
+        errEl.textContent = errMsg;
+        errEl.classList.remove('hidden');
       }
     });
 
@@ -2095,7 +2257,7 @@
           state = JSON.parse(reader.result);
           saveState('Imported portfolio JSON');
         } catch (err) {
-          showToast('Invalid JSON file');
+          showToast('Invalid JSON file', true);
         }
       };
       reader.readAsText(f);
@@ -2103,64 +2265,162 @@
 
     document.getElementById('reset-demo-btn').addEventListener('click', () => {
       state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      if (IS_BACKEND) state.profile.passcode = '';
       saveState('Reset to defaults');
     });
 
     renderAll();
 
+    async function extractErrorDetail(res) {
+      try {
+        const text = await res.text();
+        if (!text) return `HTTP ${res.status} ${res.statusText}`;
+        try {
+          const parsed = JSON.parse(text);
+          return parsed.detail || parsed.message || parsed.error || text;
+        } catch (e) {
+          return text.slice(0, 200);
+        }
+      } catch (e) {
+        return `HTTP ${res.status} ${res.statusText}`;
+      }
+    }
+
     async function syncLoadFromBackend() {
       if (!IS_BACKEND) return;
       try {
-        const res = await fetch('/api/portfolio');
+        const res = await fetch('/api/portfolio', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data && data.profile) {
             state = {
               ...DEFAULT_STATE,
               ...data,
-              profile: { ...DEFAULT_STATE.profile, ...data.profile }
+              profile: { ...DEFAULT_STATE.profile, ...data.profile, passcode: '' }
             };
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {}
             renderAll();
           }
+        } else {
+          const detail = await extractErrorDetail(res);
+          console.error('Failed to load portfolio from backend:', detail);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Failed to connect to backend:', e);
+      }
     }
 
     const _origSaveState = saveState;
-    saveState = async function(msg = 'Changes saved') {
-      _origSaveState(msg);
-      if (!IS_BACKEND) return;
-      const activePasscode = sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
+    saveState = async function(msg = 'Changes saved', overridePasscode = null) {
+      if (!IS_BACKEND) {
+        _origSaveState(msg);
+        return true;
+      }
+      const activePasscode = overridePasscode || sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
       try {
-        await fetch('/api/portfolio', {
+        const res = await fetch('/api/portfolio', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'X-Admin-Passcode': activePasscode },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Passcode': activePasscode
+          },
           body: JSON.stringify(state)
         });
-      } catch (e) {}
+        if (!res.ok) {
+          const detail = await extractErrorDetail(res);
+          showToast('Save failed: ' + detail, true);
+          return false;
+        }
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+        renderAll();
+        if (msg) showToast(msg);
+        return true;
+      } catch (err) {
+        showToast('Save failed: ' + (err.message || 'Network error'), true);
+        return false;
+      }
     };
 
     const _origHandleFileUpload = handleFileUpload;
-    handleFileUpload = async function(file, sessionKey, onDone) {
+    handleFileUpload = async function(file, sessionKey, onDone, inputEl = null) {
       if (!file) return;
-      if (IS_BACKEND) {
-        const activePasscode = sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
-        try {
+      if (!IS_BACKEND) {
+        _origHandleFileUpload(file, sessionKey, onDone);
+        return;
+      }
+      const activePasscode = sessionStorage.getItem('mk_admin_passcode') || state.profile.passcode || 'kaula12';
+      activeUploads++;
+      showToast(`Uploading ${file.name}...`);
+      try {
+        // Request a Supabase signed upload URL (bypasses Vercel's 4.5 MB limit)
+        // or use local /api/upload proxy in local dev.
+        const urlRes = await fetch('/api/upload-url', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Passcode': activePasscode
+          },
+          body: JSON.stringify({
+            filename: file.name,
+            content_type: file.type || 'application/octet-stream'
+          })
+        });
+        if (!urlRes.ok) {
+          const detail = await extractErrorDetail(urlRes);
+          throw new Error(detail);
+        }
+        const meta = await urlRes.json();
+        let uploadedUrl = '';
+
+        if (meta.mode === 'direct' && meta.signed_url) {
+          const putRes = await fetch(meta.signed_url, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': file.type || 'application/octet-stream',
+              'x-upsert': 'false'
+            },
+            body: file
+          });
+          if (!putRes.ok) {
+            const detail = await extractErrorDetail(putRes);
+            throw new Error(`Storage upload failed: ${detail}`);
+          }
+          uploadedUrl = meta.public_url;
+        } else {
           const fd = new FormData();
           fd.append('file', file);
-          const res = await fetch('/api/upload', {
+          const upRes = await fetch(meta.upload_endpoint || '/api/upload', {
             method: 'POST',
             headers: { 'X-Admin-Passcode': activePasscode },
             body: fd
           });
-          if (res.ok) {
-            const out = await res.json();
-            onDone(out.url);
-            return;
+          if (!upRes.ok) {
+            if (upRes.status === 413) {
+              throw new Error('File exceeds 4.5 MB server upload limit. Connect Supabase Storage for direct uploads up to 50 MB.');
+            }
+            const detail = await extractErrorDetail(upRes);
+            throw new Error(detail);
           }
-        } catch (e) {}
+          const out = await upRes.json();
+          uploadedUrl = out.url;
+        }
+
+        if (!uploadedUrl) {
+          throw new Error('Upload succeeded but server returned no file URL.');
+        }
+        delete sessionMediaUrls[sessionKey];
+        await onDone(uploadedUrl);
+      } catch (err) {
+        console.error('Upload failed:', err);
+        showToast('Upload failed: ' + (err.message || 'Unknown error'), true);
+      } finally {
+        activeUploads = Math.max(0, activeUploads - 1);
+        if (inputEl) inputEl.value = '';
       }
-      _origHandleFileUpload(file, sessionKey, onDone);
     };
 
     syncLoadFromBackend();
